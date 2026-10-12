@@ -29,11 +29,6 @@
 			"title": "Considera il Migliore Amico",
 			"desc": "Considera il livello 51 come raggiungibile — la tabella IV, le stringhe di eliminazione/ricerca, il PL massimo, il selettore di livello, i migliori IV/percentile, i contatori raid e DPS/TDO valutano tutti fino al livello 51 invece che 50."
 		},
-		"appBadge": {
-			"title": "Badge sull’icona dell’app",
-			"desc": "Mostra sull’icona dell’app il numero di eventi del calendario non letti. Si aggiorna a ogni apertura dell’app.",
-			"refused": "Le notifiche sono bloccate per questa app. Consentile nelle impostazioni del dispositivo per usare il badge."
-		},
 		"footer": "Le preferenze sono salvate su questo dispositivo."
 	},
 	"spriteOptions": {

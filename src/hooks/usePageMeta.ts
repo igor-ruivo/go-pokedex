@@ -200,7 +200,7 @@ const upsert = (selector: string, attrs: Record<string, string>) => {
  *     prerendered URL, so a crawler that somehow reaches one doesn't read
  *     it as a separate duplicate page competing with the real one.
  */
-export const usePageMeta = () => {
+export const usePageMeta = (unseenCount = 0) => {
 	const { pathname } = useLocation();
 	const { speciesId, moveId, type: typeParam, tab: tabParam } = useParams();
 	const [searchParams] = useSearchParams();
@@ -268,7 +268,8 @@ export const usePageMeta = () => {
 		const isCustomImage = Boolean(image);
 		const resolvedImage = image ? (image.startsWith('http') ? image : origin + image) : `${origin}/logo512.png`;
 
-		document.title = title;
+		// the unread-events count leads the tab title, like a notification badge (not in the og/twitter tags)
+		document.title = unseenCount > 0 ? `(${unseenCount > 9 ? '9+' : unseenCount}) ${title}` : title;
 		upsert('meta[name="description"]', { name: 'description', content: description });
 		upsert('link[rel="canonical"]', { rel: 'canonical', href: origin + canonicalPath });
 		upsert('meta[property="og:title"]', { property: 'og:title', content: title });
@@ -294,5 +295,6 @@ export const usePageMeta = () => {
 		moves,
 		pokemonReady,
 		movesFetchCompleted,
+		unseenCount,
 	]);
 };

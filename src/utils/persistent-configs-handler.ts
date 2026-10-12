@@ -96,8 +96,6 @@ export enum ConfigKeys {
 	IgnoreSmallCapSpreads,
 	/** Non-perfect-IVs tab only — also protect the rank-1 spreads of the cups whose CP cap is below Great League's (500). Off by default. */
 	ConsiderSmallCapSpreads,
-	/** Whether the installed app shows the number of unread calendar events on its icon (see lib/app-badge.ts). Absent: on, except where the OS wants a permission first. */
-	AppBadge,
 }
 
 // A storage read/write can throw for reasons that have nothing to do with

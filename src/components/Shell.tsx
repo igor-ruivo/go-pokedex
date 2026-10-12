@@ -61,9 +61,9 @@ const Shell = () => {
 			window.removeEventListener('orientationchange', measure);
 		};
 	}, [platform]);
-	usePageMeta();
-	useScrollToTopOnNavigate();
 	const { count: unseenEvents, ready: unseenReady } = useUnseenEvents();
+	usePageMeta(unseenEvents);
+	useScrollToTopOnNavigate();
 	// the same number on the app's icon, where the device has one (see lib/app-badge.ts)
 	useSyncAppBadge(unseenReady ? unseenEvents : undefined);
 	// Kicks off the one-time game-translations fetch and re-renders this whole

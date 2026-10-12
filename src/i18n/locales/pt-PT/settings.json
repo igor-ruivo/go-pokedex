@@ -29,11 +29,6 @@
 			"title": "Considerar Melhor Amigo",
 			"desc": "Tratar o nível 51 como alcançável — a tabela de IVs, as strings de eliminação/pesquisa, o CP máximo, o seletor de nível, os melhores IVs/percentil, os contadores de reide e o DPS/TDO passam todos a avaliar até ao nível 51 em vez de 50."
 		},
-		"appBadge": {
-			"title": "Emblema no ícone da app",
-			"desc": "Mostra no ícone da app o número de eventos do calendário por ler. É atualizado sempre que a app é aberta.",
-			"refused": "As notificações estão bloqueadas para esta app. Permite-as nas definições do dispositivo para usar o emblema."
-		},
 		"footer": "As preferências são guardadas neste dispositivo."
 	},
 	"spriteOptions": {

@@ -29,11 +29,6 @@
 			"title": "Considerar Mejor Amigo",
 			"desc": "Trata el nivel 51 como alcanzable — la tabla de IVs, las cadenas de basura/búsqueda, el PC máximo, el selector de nivel, los mejores IVs/percentil, los contadores de incursión y el DPS/TDO pasan a evaluarse hasta el nivel 51 en lugar del 50."
 		},
-		"appBadge": {
-			"title": "Globo en el icono de la app",
-			"desc": "Muestra en el icono de la app el número de eventos del calendario sin leer. Se actualiza cada vez que se abre la app.",
-			"refused": "Las notificaciones están bloqueadas para esta app. Permítelas en los ajustes del dispositivo para usar el globo."
-		},
 		"footer": "Las preferencias se guardan en este dispositivo."
 	},
 	"spriteOptions": {
