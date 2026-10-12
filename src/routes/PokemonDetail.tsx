@@ -28,10 +28,11 @@ import { useBestIvs } from '../hooks/useBestIvs';
 import useComputeIVs from '../hooks/useComputeIVs';
 import { usePlayOnChange } from '../hooks/usePlayOnChange';
 import { cleanName, dec1, dexNo, ordinal, rankPerfection, sentenceCase } from '../lib/format';
+import { highestLevelUnderCap } from '../lib/iv-rank';
 import { leagueColor, leagueIcon, leagueTitle } from '../lib/league-visuals';
 import { R } from '../lib/nav';
 import { fmtRaidMetric, RAID_METRIC_LABEL, raidRankOf } from '../lib/raid-metric';
-import { SUPER_MEGA_BONUS } from '../lib/team-analysis';
+import { type SlotIvs, SUPER_MEGA_BONUS } from '../lib/team-analysis';
 import { accentStyle, typeKey, typeVar } from '../lib/types';
 import { extraLeagues, useLeagueDefinitions } from '../queries/leagues';
 import { useMoves } from '../queries/moves';
@@ -628,6 +629,18 @@ const PokemonDetail = () => {
 		return out;
 	}, [boardData, carousel, moves, movesFetchCompleted, gamemasterPokemon, raidMetric, maxLevelIndex]);
 
+	// The hero's CP is this Pokémon's at the level where the best reachable one (the Pokémon the league's board points at: Melmetal
+	// for a Meltan) just fits the league's CP cap with these IVs — so a Meltan shows its CP on the way to a Great League Melmetal,
+	// not at level 50. On the raid tab (no cap) it stays at the highest level.
+	const heroLevel = useMemo(() => {
+		if (isRaid || !pvpMember) return level;
+		const targetIvs: SlotIvs = [
+			Math.min(15, iv.atk + purifyOffset),
+			Math.min(15, iv.def + purifyOffset),
+			Math.min(15, iv.hp + purifyOffset),
+		];
+		return highestLevelUnderCap(pvpMember.baseStats, targetIvs, pvpCpCap, heroMaxLevel);
+	}, [isRaid, pvpMember, iv, purifyOffset, pvpCpCap, heroMaxLevel, level]);
 	const heroCp = useMemo(() => {
 		if (!pokemon) return 0;
 		return calculateCP(
@@ -637,9 +650,9 @@ const PokemonDetail = () => {
 			iv.def,
 			pokemon.baseStats.hp,
 			iv.hp,
-			levelToLevelIndex(level)
+			levelToLevelIndex(heroLevel)
 		);
-	}, [pokemon, iv, level]);
+	}, [pokemon, iv, heroLevel]);
 
 	// Collapsing hero → a compact bar fades in under the app bar once you've
 	// almost finished scrolling past the *whole* hero card, and fades back out
