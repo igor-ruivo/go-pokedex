@@ -29,6 +29,8 @@
 			"title": "Prendre en compte le Meilleur Ami",
 			"desc": "Considérer le niveau 51 comme atteignable — le tableau des IV, les chaînes de suppression/recherche, les PC max, le sélecteur de niveau, les meilleurs IV/percentile, les calculs de raid et les DPS/TDO évaluent alors jusqu'au niveau 51 au lieu de 50."
 		},
+		"dataUpdated": "Données du jeu actualisées pour la dernière fois : {{time}}. Elles ne le sont que lorsqu’il y a du nouveau, environ une fois par jour.",
+		"version": "Version {{commit}} · compilée {{time}}",
 		"footer": "Les préférences sont enregistrées sur cet appareil."
 	},
 	"spriteOptions": {

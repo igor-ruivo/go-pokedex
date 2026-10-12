@@ -18,7 +18,14 @@ import { useDebouncedValue } from '../hooks/useDebouncedValue';
 import { useLiveNow } from '../hooks/useLiveNow';
 import { usePlayOnChange } from '../hooks/usePlayOnChange';
 import { useScrollAnchor } from '../hooks/useScrollAnchor';
-import { leekduckPosts, specialToPost, spotlightToPost } from '../lib/calendar-events';
+import {
+	duplicateTitles,
+	eventDisplayTitle,
+	leekduckPosts,
+	prefersSubtitle,
+	specialToPost,
+	spotlightToPost,
+} from '../lib/calendar-events';
 import { startsIn, timeLeft } from '../lib/event-timing';
 import {
 	cleanName,
@@ -567,9 +574,7 @@ const EventCard = ({
 	// instead of sitting on a static "today" until some unrelated re-render.
 	const now = useLiveNow();
 	const phase = eventPhase(post.startDate, post.endDate, now);
-	const title =
-		(preferSubtitle ? post.subtitle[gl] || post.title[gl] : post.title[gl] || post.subtitle[gl]) ||
-		t('calendar:events.fallbackTitle');
+	const title = eventDisplayTitle(post, gl, preferSubtitle, t('calendar:events.fallbackTitle'));
 	const bonuses = post.bonuses[gl] ?? [];
 	// the bonuses with their formatting (bullet points, bold, footnotes) when the data has it, the plain lines otherwise
 	const bonusBlocks = post.bonusBlocks?.[gl] ?? [];
@@ -828,11 +833,7 @@ const EventsTab = () => {
 		return seasonFetchCompleted && season ? [season, ...events] : events;
 	}, [posts, spotlightHours, maxMondays, raidHours, ready, season, seasonFetchCompleted, gl]);
 
-	const dupeTitles = useMemo(() => {
-		const seen = new Map<string, number>();
-		for (const p of list) seen.set(p.title[gl], (seen.get(p.title[gl]) ?? 0) + 1);
-		return new Set([...seen].filter(([, n]) => n > 1).map(([t]) => t));
-	}, [list, gl]);
+	const dupeTitles = useMemo(() => duplicateTitles(list, gl), [list, gl]);
 
 	// the linked event: opened (and marked seen) as soon as it is in the list, and scrolled into view once, below the app bar
 	useEffect(() => {
@@ -874,7 +875,7 @@ const EventsTab = () => {
 							// action that actually means "you looked at this one".
 							if (opening) markSeen(p.id);
 						}}
-						preferSubtitle={dupeTitles.has(p.title[gl]) && !!p.subtitle[gl]}
+						preferSubtitle={prefersSubtitle(p, gl, dupeTitles)}
 					/>
 				))}
 			</div>

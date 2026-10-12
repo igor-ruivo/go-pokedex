@@ -1,12 +1,30 @@
+import { execSync } from 'node:child_process';
+
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 import hoverMedia from './scripts/postcss-hover-media.mjs';
 
+// The commit this build is made from (marked when the working tree has uncommitted changes) and when it was built: shown in
+// Settings so a deployed copy can be told apart from another (see src/lib/app-version.ts).
+const git = (command: string): string => {
+	try {
+		return execSync(`git ${command}`, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+	} catch {
+		return '';
+	}
+};
+const commit = git('rev-parse --short=7 HEAD');
+const appCommit = commit ? (git('status --porcelain') ? `${commit}-dirty` : commit) : 'unknown';
+
 // No config existed before this — every previous default (root, base '/',
 // outDir 'dist', publicDir 'public', …) is kept as-is; this only adds the
 // PWA plugin on top.
 export default defineConfig({
+	define: {
+		__APP_COMMIT__: JSON.stringify(appCommit),
+		__APP_BUILT_AT__: JSON.stringify(new Date().toISOString()),
+	},
 	build: {
 		rollupOptions: {
 			output: {

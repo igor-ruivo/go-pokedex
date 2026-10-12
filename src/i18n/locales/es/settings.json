@@ -29,6 +29,8 @@
 			"title": "Considerar Mejor Amigo",
 			"desc": "Trata el nivel 51 como alcanzable — la tabla de IVs, las cadenas de basura/búsqueda, el PC máximo, el selector de nivel, los mejores IVs/percentil, los contadores de incursión y el DPS/TDO pasan a evaluarse hasta el nivel 51 en lugar del 50."
 		},
+		"dataUpdated": "Datos del juego actualizados por última vez: {{time}}. Solo se actualizan cuando hay algo nuevo, aproximadamente una vez al día.",
+		"version": "Versión {{commit}} · compilada {{time}}",
 		"footer": "Las preferencias se guardan en este dispositivo."
 	},
 	"spriteOptions": {

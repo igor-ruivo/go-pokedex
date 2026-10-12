@@ -16,7 +16,14 @@ import type { IPostEntry } from '../DTOs/INews';
 import { useLiveNow } from '../hooks/useLiveNow';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useUnseenEventsCount } from '../hooks/useUnseenEventsCount';
-import { leekduckPosts, nowRaidEntries, spotlightToPost } from '../lib/calendar-events';
+import {
+	duplicateTitles,
+	eventDisplayTitle,
+	leekduckPosts,
+	nowRaidEntries,
+	prefersSubtitle,
+	spotlightToPost,
+} from '../lib/calendar-events';
 import { isCommunityDay } from '../lib/community-days';
 import { dateRange } from '../lib/format';
 import {
@@ -78,16 +85,19 @@ const EventCard = ({
 	big,
 	pokemon,
 	now,
+	preferSubtitle,
 }: {
 	post: IPostEntry;
 	big: boolean;
+	/** Listed under its subtitle, its title being shared with another listed event (see `prefersSubtitle`). */
+	preferSubtitle: boolean;
 	pokemon: Record<string, IGamemasterPokemon>;
 	now: number;
 }) => {
 	const { t } = useTranslation(['home', 'calendar']);
 	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
 	const live = post.startDate <= now;
-	const title = post.title[gl] || post.subtitle[gl] || t('calendar:events.fallbackTitle');
+	const title = eventDisplayTitle(post, gl, preferSubtitle, t('calendar:events.fallbackTitle'));
 	// A Spotlight Hour is about its one bonus: the chip is that bonus's own picture (the two candies of a 2× Catch Candy…), when it has one.
 	const spotlightBonuses = post.isSpotlight
 		? (post.bonuses[GameLanguage.en] ?? [])
@@ -253,6 +263,9 @@ const Home = () => {
 		now,
 		gl,
 	]);
+
+	const shownEvents = useMemo(() => events.slice(0, FEATURED_LIMIT), [events]);
+	const dupeTitles = useMemo(() => duplicateTitles(shownEvents, gl), [shownEvents, gl]);
 
 	// the same bosses as the Raids tab's "Now": the rotation plus every event or special window that is on
 	const nowRaids = useMemo(
@@ -480,8 +493,15 @@ const Home = () => {
 					<p className='r-muted'>{t('home:now.empty')}</p>
 				) : (
 					<div className='h-events'>
-						{events.slice(0, FEATURED_LIMIT).map((post, i) => (
-							<EventCard key={post.id} post={post} big={i === 0} pokemon={gamemasterPokemon} now={now} />
+						{shownEvents.map((post, i) => (
+							<EventCard
+								key={post.id}
+								post={post}
+								big={i === 0}
+								pokemon={gamemasterPokemon}
+								now={now}
+								preferSubtitle={prefersSubtitle(post, gl, dupeTitles)}
+							/>
 						))}
 					</div>
 				)}

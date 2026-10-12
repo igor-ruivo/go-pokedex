@@ -24,6 +24,8 @@ export interface DexSnapshot {
 	ranking: string;
 	/** `Date.now()` when these were looked up. */
 	checkedAt: number;
+	/** When dex-server's commit was made: when the data was last refreshed (`Date.parse`). */
+	updatedAt: number;
 }
 
 const SNAPSHOT_KEY = 'meta:dex-snapshot';
@@ -46,23 +48,25 @@ const isSnapshot = (value: unknown): value is DexSnapshot => {
 		snapshot !== null &&
 		isSha(snapshot.dex) &&
 		isSha(snapshot.ranking) &&
-		typeof snapshot.checkedAt === 'number'
+		typeof snapshot.checkedAt === 'number' &&
+		typeof snapshot.updatedAt === 'number'
 	);
 };
 
 /**
- * The latest commit of `branch`, as GitHub's API gives it when asked for just the hash (CORS-open). Unauthenticated calls are
+ * The latest commit of `branch` (its hash and when it was made), from GitHub's API (CORS-open). Unauthenticated calls are
  * limited to 60 an hour per IP, hence the lookup is made at most twice per `RECHECK_AFTER_MS` per visitor.
  */
-const latestCommit = async (repository: string, branch: string): Promise<string> => {
+const latestCommit = async (repository: string, branch: string): Promise<{ sha: string; date: number }> => {
 	const response = await fetch(`https://api.github.com/repos/${repository}/commits/${branch}`, {
-		headers: { Accept: 'application/vnd.github.sha' },
+		headers: { Accept: 'application/vnd.github+json' },
 		signal: AbortSignal.timeout(RESOLVE_TIMEOUT_MS),
 	});
 	if (!response.ok) throw new Error(`GitHub answered ${response.status} for ${repository}@${branch}`);
-	const sha = (await response.text()).trim();
-	if (!isSha(sha)) throw new Error('GitHub did not answer with a commit hash');
-	return sha;
+	const body = (await response.json()) as { sha?: unknown; commit?: { committer?: { date?: unknown } } };
+	const date = Date.parse(String(body.commit?.committer?.date));
+	if (!isSha(body.sha) || Number.isNaN(date)) throw new Error('GitHub did not answer with a commit');
+	return { sha: body.sha, date };
 };
 
 /**
@@ -82,7 +86,12 @@ export const initDexSnapshot = async (now = Date.now()): Promise<void> => {
 				latestCommit('igor-ruivo/dex-server', 'main'),
 				latestCommit('igor-ruivo/go-pokedex', 'data'),
 			]);
-			next = { dex, ranking, checkedAt: now };
+			next = {
+				dex: dex.sha,
+				ranking: ranking.sha,
+				checkedAt: now,
+				updatedAt: dex.date,
+			};
 		} catch {
 			// keep the last snapshot (offline, rate-limited…); with none, the branches are read directly
 		}
@@ -97,6 +106,9 @@ export const initDexSnapshot = async (now = Date.now()): Promise<void> => {
 
 /** Identifies the page's snapshot (what cached copies are tied to); `undefined` when there is none. */
 export const dexSnapshotId = (): string | undefined => (current ? `${current.dex}.${current.ranking}` : undefined);
+
+/** When the data of the page's snapshot was last refreshed (its dex-server commit); `undefined` when there is no snapshot. */
+export const dexSnapshotUpdatedAt = (): number | undefined => current?.updatedAt;
 
 /** `url` as it must be fetched: a dex-server file (or the team ranking) from the page's snapshot, anything else untouched. */
 export const pinToSnapshot = (url: string): string => {

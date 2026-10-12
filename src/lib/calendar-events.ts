@@ -183,3 +183,22 @@ export const nowRaidEntries = (input: {
 	}
 	return out;
 };
+
+/** The titles (in `gl`) that more than one of `posts` carries — a sub-event shares its parent post's title. */
+export const duplicateTitles = (posts: ReadonlyArray<IPostEntry>, gl: GameLanguage): Set<string> => {
+	const seen = new Map<string, number>();
+	for (const p of posts) seen.set(p.title[gl], (seen.get(p.title[gl]) ?? 0) + 1);
+	return new Set([...seen].filter(([, n]) => n > 1).map(([title]) => title));
+};
+
+/** Whether a post should be shown under its subtitle instead of its title: its title is shared with another post and it has a subtitle. */
+export const prefersSubtitle = (post: IPostEntry, gl: GameLanguage, dupeTitles: ReadonlySet<string>): boolean =>
+	dupeTitles.has(post.title[gl]) && !!post.subtitle[gl];
+
+/** The text an event is listed under; `fallback` when it has neither. */
+export const eventDisplayTitle = (
+	post: IPostEntry,
+	gl: GameLanguage,
+	preferSubtitle: boolean,
+	fallback: string
+): string => (preferSubtitle ? post.subtitle[gl] || post.title[gl] : post.title[gl] || post.subtitle[gl]) || fallback;

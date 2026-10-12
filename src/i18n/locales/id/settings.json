@@ -29,6 +29,8 @@
 			"title": "Perhitungkan Sahabat Karib",
 			"desc": "Anggap level 51 dapat dicapai — tabel IV, string buang/cari, CP maksimum, pemilih level, IV/persentil terbaik, penghitung raid, serta DPS/TDO semuanya dihitung hingga level 51, bukan 50."
 		},
+		"dataUpdated": "Data game terakhir diperbarui: {{time}}. Hanya diperbarui saat ada yang baru — sekitar sekali sehari.",
+		"version": "Versi {{commit}} · dibuat {{time}}",
 		"footer": "Preferensi disimpan di perangkat ini."
 	},
 	"spriteOptions": {

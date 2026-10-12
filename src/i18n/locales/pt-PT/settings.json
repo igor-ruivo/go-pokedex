@@ -29,6 +29,8 @@
 			"title": "Considerar Melhor Amigo",
 			"desc": "Tratar o nível 51 como alcançável — a tabela de IVs, as strings de eliminação/pesquisa, o CP máximo, o seletor de nível, os melhores IVs/percentil, os contadores de reide e o DPS/TDO passam todos a avaliar até ao nível 51 em vez de 50."
 		},
+		"dataUpdated": "Dados do jogo atualizados pela última vez: {{time}}. Só são atualizados quando há novidades, cerca de uma vez por dia.",
+		"version": "Versão {{commit}} · compilada {{time}}",
 		"footer": "As preferências são guardadas neste dispositivo."
 	},
 	"spriteOptions": {

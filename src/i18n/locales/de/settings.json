@@ -29,6 +29,8 @@
 			"title": "Besten Freund berücksichtigen",
 			"desc": "Stufe 51 als erreichbar behandeln — die IW-Tabelle, Lösch-/Suchstrings, maximale WP, Stufenwähler, beste IWs/Perzentil, Arena-Kampf-Rechner und DPS/TDO berücksichtigen dann alle Stufe 51 statt 50."
 		},
+		"dataUpdated": "Spieldaten zuletzt aktualisiert: {{time}}. Sie werden nur aktualisiert, wenn es etwas Neues gibt – etwa einmal am Tag.",
+		"version": "Version {{commit}} · erstellt {{time}}",
 		"footer": "Einstellungen werden auf diesem Gerät gespeichert."
 	},
 	"spriteOptions": {

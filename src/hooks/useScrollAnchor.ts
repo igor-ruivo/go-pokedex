@@ -6,8 +6,9 @@ import { useCallback, useLayoutEffect, useRef } from 'react';
  * drawn the change (`changed` is what tells it apart: the id of the open card), the scroll is moved by however far the card went, so
  * it is on the very line it was on — the card just opened (or closed) stays under the finger instead of sliding away.
  *
- * A card that was just opened (`opening`) is then brought into view with a smooth scroll: centred on the screen, except that its
- * start always stays on screen, under the bar at the top, when it is taller than what is left.
+ * Opening never recentres or animates the page: the card stays where the reader tapped it. The one exception is a card that ends up
+ * with its start hidden under the bar at the top (opened from a header that was only just peeking out): that is nudged, instantly,
+ * so its start is on screen.
  */
 export const useScrollAnchor = (changed: unknown): ((card: HTMLElement | null, opening?: boolean) => void) => {
 	const anchor = useRef<{ card: HTMLElement; top: number; opening: boolean } | null>(null);
@@ -20,16 +21,9 @@ export const useScrollAnchor = (changed: unknown): ((card: HTMLElement | null, o
 		if (Math.abs(moved) > 0.5) window.scrollTo(0, window.scrollY + moved);
 		if (!held.opening) return;
 
-		const rect = held.card.getBoundingClientRect();
 		const barBottom = document.querySelector('.r-appbar')?.getBoundingClientRect().bottom ?? 70;
-		const margin = 12;
-		const free = window.innerHeight - barBottom - margin * 2;
-		// centred in what is left under the bar; the start of the card wins when it is taller than that
-		const wanted = rect.height >= free ? barBottom + margin : barBottom + margin + (free - rect.height) / 2;
-		const by = rect.top - wanted;
-		if (Math.abs(by) < 2) return;
-		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		window.scrollBy({ top: by, behavior: reduced ? 'auto' : 'smooth' });
+		const hidden = barBottom + 8 - held.card.getBoundingClientRect().top;
+		if (hidden > 0) window.scrollBy({ top: -hidden, behavior: 'auto' });
 	}, [changed]);
 
 	return useCallback((card: HTMLElement | null, opening = false) => {

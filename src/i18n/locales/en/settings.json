@@ -29,6 +29,8 @@
 			"title": "Account for Best Buddy",
 			"desc": "Treat level 51 as reachable — the IV table, trash/search strings, max CP, level picker, best IVs/percentile, raid counters and DPS/TDO all evaluate up to level 51 instead of 50."
 		},
+		"dataUpdated": "Game data last refreshed: {{time}}. It is only refreshed when there is something new — about once a day.",
+		"version": "Version {{commit}} · built {{time}}",
 		"footer": "Preferences are stored on this device."
 	},
 	"spriteOptions": {
