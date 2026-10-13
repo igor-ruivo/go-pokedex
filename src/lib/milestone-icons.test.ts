@@ -20,6 +20,8 @@ describe('the icons of a bonus, by keywords in its English text', () => {
 		['2× Daily Adventure Incense duration.', ['dailyIncense']],
 		['Free Stickers for catching Pokémon', ['stickers']],
 		['One additional Candy for trading Pokémon.', ['candy', 'trade']],
+		['Receive up to six free Raid Passes from spinning Gym Photo Discs.', ['raidPass']],
+		['Receive a free Remote Raid Pass.', ['remoteRaidPass']],
 		['And even more goodies!', []],
 	])('%s', (text, icons) => {
 		expect(bonusIcons(text)).toEqual(icons);

@@ -28,6 +28,7 @@ export type BonusIconKey =
 	| 'superIncubator'
 	| 'maxParticles'
 	| 'remoteRaidPass'
+	| 'raidPass'
 	| 'powerSpot'
 	| 'maxBattle'
 	| 'megaEnergy'
@@ -60,6 +61,7 @@ export const BONUS_ICON_URL: Record<BonusIconKey, string> = {
 	superIncubator: '/images/bonuses/super-incubator.png',
 	maxParticles: '/images/bonuses/max-particles.png',
 	remoteRaidPass: '/images/bonuses/remote-raid-pass.png',
+	raidPass: '/images/bonuses/raid-pass.png',
 	powerSpot: '/images/bonuses/power-spot.png',
 	maxBattle: '/images/nav/max-battle.webp',
 	megaEnergy: '/images/bonuses/mega-energy.png',
@@ -81,6 +83,7 @@ const RULES: ReadonlyArray<readonly [BonusIconKey, (text: string) => boolean]> =
 	['superIncubator', (t) => /super incubator/i.test(t)],
 	['maxParticles', (t) => /max particles?/i.test(t)],
 	['remoteRaidPass', (t) => /remote raid pass/i.test(t)],
+	['raidPass', (t) => /(?<!remote )raid pass/i.test(t)],
 	['powerSpot', (t) => /power spots?/i.test(t) && !/max particles?/i.test(t)],
 	['maxBattle', (t) => /\bmax battles?/i.test(t)],
 	['megaEnergy', (t) => /mega energy/i.test(t)],
