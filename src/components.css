@@ -3905,11 +3905,6 @@
 }
 
 /* ---- Settings ----------------------------------------------------------------- */
-.rvmp .r-set {
-	display: flex;
-	flex-direction: column;
-	gap: var(--s4);
-}
 .rvmp .r-set-row {
 	display: flex;
 	flex-direction: column;
@@ -5324,7 +5319,7 @@
 	position: relative;
 	display: inline-block;
 	max-width: 100%;
-	/* Settings.tsx's `.r-set-row` is a flex column, which stretches a plain
+	/* A `.r-set-row` (MassDelete's language row) is a flex column, which stretches a plain
 	   block-level child to the row's full width by default — that would win
 	   over `.r-lang-pop`'s own `max-width` below (a wider `min-width: 100%`
 	   beats a smaller `max-width` per the CSS sizing spec), producing a

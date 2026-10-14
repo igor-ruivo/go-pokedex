@@ -9,14 +9,11 @@
 		"bestBuddy": "Account for Best Buddy",
 		"off": "Off",
 		"on": "On",
-		"footer": "Saved on this device."
+		"footer": "Saved on this device.",
+		"dataUpdated": "Game data last refreshed: {{time}}",
+		"version": "App version {{commit}} · built {{time}}"
 	},
 	"page": {
-		"title": "Settings",
-		"appLanguage": {
-			"title": "App language",
-			"desc": "Interface text. English is the default. Also the default for the search-string keyword terms below, unless overridden on the Mass Delete or Search Strings pages."
-		},
 		"gameLanguage": {
 			"title": "Game language",
 			"desc": "Search-bar keyword terms, as they appear in Pokémon GO."
@@ -24,22 +21,11 @@
 		"sprites": {
 			"title": "Sprites",
 			"desc": "Which artwork to show for every Pokémon."
-		},
-		"bestBuddy": {
-			"title": "Account for Best Buddy",
-			"desc": "Treat level 51 as reachable — the IV table, trash/search strings, max CP, level picker, best IVs/percentile, raid counters and DPS/TDO all evaluate up to level 51 instead of 50."
-		},
-		"dataUpdated": "Game data last refreshed: {{time}}. It is only refreshed when there is something new — about once a day.",
-		"version": "Version {{commit}} · built {{time}}",
-		"footer": "Preferences are stored on this device."
+		}
 	},
 	"spriteOptions": {
 		"official": "Official",
 		"go": "Pokémon GO",
 		"shiny": "GO {{shiny}}"
-	},
-	"toggle": {
-		"off": "Off",
-		"on": "On"
 	}
 }

@@ -9,14 +9,11 @@
 		"bestBuddy": "베스트프렌드 기준 적용",
 		"off": "끄기",
 		"on": "켜기",
-		"footer": "이 기기에 저장됩니다."
+		"footer": "이 기기에 저장됩니다.",
+		"dataUpdated": "게임 데이터 마지막 갱신: {{time}}",
+		"version": "앱 버전 {{commit}} · 빌드 {{time}}"
 	},
 	"page": {
-		"title": "설정",
-		"appLanguage": {
-			"title": "앱 언어",
-			"desc": "화면에 표시되는 텍스트입니다. 기본값은 영어입니다. Mass Delete 또는 Search Strings 페이지에서 재정의하지 않는 한, 아래 검색 키워드의 기본 언어이기도 합니다."
-		},
 		"gameLanguage": {
 			"title": "게임 언어",
 			"desc": "검색창 키워드, Pokémon GO 표기 기준."
@@ -24,22 +21,11 @@
 		"sprites": {
 			"title": "스프라이트",
 			"desc": "각 포켓몬에 표시할 아트워크입니다."
-		},
-		"bestBuddy": {
-			"title": "베스트프렌드 기준 적용",
-			"desc": "레벨 51까지 도달 가능한 것으로 간주합니다 — 개체값 표, 삭제/검색 문자열, 최대 CP, 레벨 선택기, 베스트 개체값/백분위, 레이드 카운터, DPS/TDO가 모두 레벨 50이 아닌 51까지 계산됩니다."
-		},
-		"dataUpdated": "게임 데이터 마지막 갱신: {{time}}. 새로운 내용이 있을 때만 하루에 한 번 정도 갱신됩니다.",
-		"version": "버전 {{commit}} · 빌드 {{time}}",
-		"footer": "설정은 이 기기에 저장됩니다."
+		}
 	},
 	"spriteOptions": {
 		"official": "공식",
 		"go": "Pokémon GO",
 		"shiny": "GO {{shiny}}"
-	},
-	"toggle": {
-		"off": "끄기",
-		"on": "켜기"
 	}
 }

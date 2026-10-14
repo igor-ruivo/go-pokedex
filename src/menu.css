@@ -269,6 +269,9 @@
 	font-size: 12px;
 	line-height: 1.5;
 }
+.rvmp .r-menu-build {
+	flex-basis: 100%;
+}
 .rvmp .r-menu-foot {
 	display: flex;
 	flex-wrap: wrap;

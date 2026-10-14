@@ -9,14 +9,11 @@
 		"bestBuddy": "En İyi Dost'u hesaba kat",
 		"off": "Kapalı",
 		"on": "Açık",
-		"footer": "Bu cihazda kaydedildi."
+		"footer": "Bu cihazda kaydedildi.",
+		"dataUpdated": "Oyun verileri en son şu zaman yenilendi: {{time}}",
+		"version": "Uygulama sürümü {{commit}} · derleme {{time}}"
 	},
 	"page": {
-		"title": "Ayarlar",
-		"appLanguage": {
-			"title": "Uygulama dili",
-			"desc": "Arayüz metni. Varsayılan dil İngilizce'dir. Mass Delete veya Search Strings sayfalarında değiştirilmedikçe, aşağıdaki arama anahtar kelimeleri için de varsayılan dildir."
-		},
 		"gameLanguage": {
 			"title": "Oyun dili",
 			"desc": "Arama çubuğu anahtar kelimeleri, Pokémon GO'daki hâliyle."
@@ -24,22 +21,11 @@
 		"sprites": {
 			"title": "Görseller",
 			"desc": "Her Pokémon için hangi görselin gösterileceği."
-		},
-		"bestBuddy": {
-			"title": "En İyi Dost'u hesaba kat",
-			"desc": "Seviye 51'i ulaşılabilir kabul et — IV tablosu, çöp/arama dizeleri, maksimum CP, seviye seçici, en iyi IV'ler/yüzdelik dilim, baskın sayaçları ve DPS/TDO hesaplamalarının tümü seviye 50 yerine 51'e kadar değerlendirilir."
-		},
-		"dataUpdated": "Oyun verileri en son şu zaman yenilendi: {{time}}. Yalnızca yeni bir şey olduğunda, yaklaşık günde bir kez yenilenir.",
-		"version": "Sürüm {{commit}} · derleme {{time}}",
-		"footer": "Tercihler bu cihazda saklanır."
+		}
 	},
 	"spriteOptions": {
 		"official": "Resmi",
 		"go": "Pokémon GO",
 		"shiny": "GO {{shiny}}"
-	},
-	"toggle": {
-		"off": "Kapalı",
-		"on": "Açık"
 	}
 }

@@ -27,7 +27,6 @@ import Moves from './routes/Moves';
 import Placeholder from './routes/Placeholder';
 import PokemonDetail from './routes/PokemonDetail';
 import Rankings from './routes/Rankings';
-import Settings from './routes/Settings';
 import Types from './routes/Types';
 import { queryClient } from './utils/query-client';
 
@@ -85,7 +84,6 @@ const App = () => {
 													{/* Old URLs, kept working for anyone with a bookmark or shared link. */}
 													<Route path='trash' element={<Navigate to='/search-strings/non-meta-relevant' replace />} />
 													<Route path='tools' element={<Placeholder title={t('common:placeholder.toolsTitle')} />} />
-													<Route path='settings' element={<Settings />} />
 													<Route path='*' element={<Navigate to='/' replace />} />
 												</Route>
 											</Routes>

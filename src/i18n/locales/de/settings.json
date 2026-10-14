@@ -9,14 +9,11 @@
 		"bestBuddy": "Besten Freund berücksichtigen",
 		"off": "Aus",
 		"on": "An",
-		"footer": "Auf diesem Gerät gespeichert."
+		"footer": "Auf diesem Gerät gespeichert.",
+		"dataUpdated": "Spieldaten zuletzt aktualisiert: {{time}}",
+		"version": "App-Version {{commit}} · erstellt {{time}}"
 	},
 	"page": {
-		"title": "Einstellungen",
-		"appLanguage": {
-			"title": "App-Sprache",
-			"desc": "Text der Oberfläche. Englisch ist die Standardsprache. Auch die Standardsprache für die Such-Schlagwörter unten, sofern nicht auf der Seite „Massenlöschung“ oder „Suchstrings“ überschrieben."
-		},
 		"gameLanguage": {
 			"title": "Spielsprache",
 			"desc": "Suchleisten-Schlagwörter, wie sie in Pokémon GO erscheinen."
@@ -24,22 +21,11 @@
 		"sprites": {
 			"title": "Sprites",
 			"desc": "Welche Grafik für jedes Pokémon angezeigt wird."
-		},
-		"bestBuddy": {
-			"title": "Besten Freund berücksichtigen",
-			"desc": "Stufe 51 als erreichbar behandeln — die IW-Tabelle, Lösch-/Suchstrings, maximale WP, Stufenwähler, beste IWs/Perzentil, Arena-Kampf-Rechner und DPS/TDO berücksichtigen dann alle Stufe 51 statt 50."
-		},
-		"dataUpdated": "Spieldaten zuletzt aktualisiert: {{time}}. Sie werden nur aktualisiert, wenn es etwas Neues gibt – etwa einmal am Tag.",
-		"version": "Version {{commit}} · erstellt {{time}}",
-		"footer": "Einstellungen werden auf diesem Gerät gespeichert."
+		}
 	},
 	"spriteOptions": {
 		"official": "Offiziell",
 		"go": "Pokémon GO",
 		"shiny": "GO {{shiny}}"
-	},
-	"toggle": {
-		"off": "Aus",
-		"on": "An"
 	}
 }

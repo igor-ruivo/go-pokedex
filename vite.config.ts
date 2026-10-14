@@ -6,7 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 import hoverMedia from './scripts/postcss-hover-media.mjs';
 
 // The commit this build is made from (marked when the working tree has uncommitted changes) and when it was built: shown in
-// Settings so a deployed copy can be told apart from another (see src/lib/app-version.ts).
+// the app menu so a deployed copy can be told apart from another (see src/lib/app-version.ts).
 const git = (command: string): string => {
 	try {
 		return execSync(`git ${command}`, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();

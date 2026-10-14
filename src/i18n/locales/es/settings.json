@@ -9,14 +9,11 @@
 		"bestBuddy": "Considerar Mejor Amigo",
 		"off": "Desactivado",
 		"on": "Activado",
-		"footer": "Guardado en este dispositivo."
+		"footer": "Guardado en este dispositivo.",
+		"dataUpdated": "Datos del juego actualizados por última vez: {{time}}",
+		"version": "Versión de la app {{commit}} · compilada {{time}}"
 	},
 	"page": {
-		"title": "Configuración",
-		"appLanguage": {
-			"title": "Idioma de la app",
-			"desc": "Texto de la interfaz. El inglés es el idioma predeterminado. También es el idioma predeterminado de las palabras clave de búsqueda de abajo, salvo que se anule en Eliminación masiva o en Cadenas de búsqueda."
-		},
 		"gameLanguage": {
 			"title": "Idioma del juego",
 			"desc": "Palabras clave de la barra de búsqueda, tal como aparecen en Pokémon GO."
@@ -24,22 +21,11 @@
 		"sprites": {
 			"title": "Sprites",
 			"desc": "Qué ilustración mostrar para cada Pokémon."
-		},
-		"bestBuddy": {
-			"title": "Considerar Mejor Amigo",
-			"desc": "Trata el nivel 51 como alcanzable — la tabla de IVs, las cadenas de basura/búsqueda, el PC máximo, el selector de nivel, los mejores IVs/percentil, los contadores de incursión y el DPS/TDO pasan a evaluarse hasta el nivel 51 en lugar del 50."
-		},
-		"dataUpdated": "Datos del juego actualizados por última vez: {{time}}. Solo se actualizan cuando hay algo nuevo, aproximadamente una vez al día.",
-		"version": "Versión {{commit}} · compilada {{time}}",
-		"footer": "Las preferencias se guardan en este dispositivo."
+		}
 	},
 	"spriteOptions": {
 		"official": "Oficial",
 		"go": "Pokémon GO",
 		"shiny": "{{shiny}} de GO"
-	},
-	"toggle": {
-		"off": "Desactivado",
-		"on": "Activado"
 	}
 }

@@ -20,7 +20,7 @@ const pageFamily = (pathname: string): string => {
 	if (pathname.startsWith('/pokemon/')) return '/pokemon'; // species *and* tab are both tab-like here
 	if (pathname.startsWith('/rankings')) return '/rankings'; // league/type are tab-like here
 	if (pathname.startsWith('/calendar')) return '/calendar'; // ditto for the calendar's tab
-	return pathname; // /moves, /move/:id, /types, /trash, /settings, … — each is its own page
+	return pathname; // /moves, /move/:id, /types, /trash, … — each is its own page
 };
 
 /**

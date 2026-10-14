@@ -10,10 +10,12 @@ import { Theme, useTheme } from '../contexts/theme-context';
 import { useSwipeToClose } from '../hooks/useSwipeToClose';
 import { useUnseenEventsCount } from '../hooks/useUnseenEventsCount';
 import { SUPPORTED_LOCALE_NAMES, SUPPORTED_LOCALES } from '../i18n';
+import { APP_BUILT_AT, APP_COMMIT } from '../lib/app-version';
 import { sentenceCase } from '../lib/format';
 import { R } from '../lib/nav';
 import { RAID_METRIC_LABEL, RAID_METRICS } from '../lib/raid-metric';
 import { socialLinks } from '../lib/social';
+import { dexSnapshotUpdatedAt } from '../utils/dex-snapshot';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { BrandMark } from './BrandMark';
 import { TeamBuilderIcon } from './NavIcons';
@@ -37,6 +39,9 @@ export const AppMenu = () => {
 	const { bestBuddy, updateBestBuddy } = useBestBuddy();
 	const { theme, updateTheme } = useTheme();
 	const unseenEvents = useUnseenEventsCount();
+	const dataUpdatedAt = dexSnapshotUpdatedAt();
+	const formatMoment = (time: number) =>
+		new Date(time).toLocaleString(currentLanguage, { dateStyle: 'medium', timeStyle: 'medium' });
 	const [open, setOpen] = useState(false);
 	const [closing, setClosing] = useState(false);
 	const triggerRef = useRef<HTMLButtonElement>(null);
@@ -347,6 +352,19 @@ export const AppMenu = () => {
 								<a href={FEEDBACK_URL} target='_blank' rel='noopener noreferrer'>
 									{t('home:footer.issues')} <span aria-hidden='true'>↗</span>
 								</a>
+								<div className='r-menu-build'>
+									{dataUpdatedAt !== undefined && (
+										<p className='r-menu-note'>
+											{t('settings:menu.dataUpdated', { time: formatMoment(dataUpdatedAt) })}
+										</p>
+									)}
+									<p className='r-menu-note'>
+										{t('settings:menu.version', {
+											commit: APP_COMMIT,
+											time: APP_BUILT_AT === undefined ? '—' : formatMoment(APP_BUILT_AT),
+										})}
+									</p>
+								</div>
 							</footer>
 						</aside>
 					</div>,

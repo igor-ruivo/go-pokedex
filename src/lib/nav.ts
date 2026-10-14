@@ -30,7 +30,6 @@ export const R = {
 	types: '/types',
 	searchStrings: (tab: MassDeleteTab = 'non-meta-relevant'): string => `/search-strings/${tab}`,
 	tools: '/tools',
-	settings: '/settings',
 };
 
 // The always-present modes; any other string is a live league id from

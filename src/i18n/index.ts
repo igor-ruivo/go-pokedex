@@ -17,7 +17,7 @@ import { ConfigKeys, readPersistentValue } from '../utils/persistent-configs-han
 // language switcher (pokemongolive.com), i.e. every locale Pokémon GO is
 // actually played/localized in. `SUPPORTED_LOCALE_NAMES` gives each one's
 // endonym (the name for the language *in* that language — "Español", not
-// "Spanish") for the picker in SettingsMenu.tsx/Settings.tsx, same
+// "Spanish") for the picker in AppMenu.tsx, same
 // convention Niantic's own picker uses. None of these are RTL scripts.
 // Polish is deliberately absent: Niantic's own Pokémon GO help site has no
 // Polish edition (it falls straight back to plain English), unlike every

@@ -9,14 +9,11 @@
 		"bestBuddy": "Perhitungkan Sahabat Karib",
 		"off": "Mati",
 		"on": "Aktif",
-		"footer": "Disimpan di perangkat ini."
+		"footer": "Disimpan di perangkat ini.",
+		"dataUpdated": "Data game terakhir diperbarui: {{time}}",
+		"version": "Versi aplikasi {{commit}} · dibuat {{time}}"
 	},
 	"page": {
-		"title": "Pengaturan",
-		"appLanguage": {
-			"title": "Bahasa aplikasi",
-			"desc": "Teks antarmuka. Bahasa Inggris adalah default. Juga menjadi default untuk kata kunci pencarian di bawah, kecuali ditimpa di halaman Mass Delete atau Search Strings."
-		},
 		"gameLanguage": {
 			"title": "Bahasa game",
 			"desc": "Kata kunci bilah pencarian, seperti yang muncul di Pokémon GO."
@@ -24,22 +21,11 @@
 		"sprites": {
 			"title": "Sprite",
 			"desc": "Ilustrasi mana yang ditampilkan untuk setiap Pokémon."
-		},
-		"bestBuddy": {
-			"title": "Perhitungkan Sahabat Karib",
-			"desc": "Anggap level 51 dapat dicapai — tabel IV, string buang/cari, CP maksimum, pemilih level, IV/persentil terbaik, penghitung raid, serta DPS/TDO semuanya dihitung hingga level 51, bukan 50."
-		},
-		"dataUpdated": "Data game terakhir diperbarui: {{time}}. Hanya diperbarui saat ada yang baru — sekitar sekali sehari.",
-		"version": "Versi {{commit}} · dibuat {{time}}",
-		"footer": "Preferensi disimpan di perangkat ini."
+		}
 	},
 	"spriteOptions": {
 		"official": "Resmi",
 		"go": "Pokémon GO",
 		"shiny": "{{shiny}} GO"
-	},
-	"toggle": {
-		"off": "Mati",
-		"on": "Aktif"
 	}
 }
