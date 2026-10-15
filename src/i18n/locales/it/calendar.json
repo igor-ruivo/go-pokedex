@@ -66,8 +66,10 @@
 		"groups": {
 			"featuredSpawns": "Spawn in evidenza",
 			"featuredRaids": "{{raid}} in evidenza",
+			"raids": "{{raid}}",
 			"researchEncounters": "Incontri di Ricerca sul Campo",
 			"eggs": "Uova",
+			"eggsDistance": "{{eggs}} da {{distance}}",
 			"incense": "Incenso",
 			"lures": "Moduli Esca"
 		},

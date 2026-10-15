@@ -32,7 +32,11 @@ export type BonusIconKey =
 	| 'powerSpot'
 	| 'maxBattle'
 	| 'megaEnergy'
-	| 'ultraBall';
+	| 'ultraBall'
+	| 'coinBag'
+	| 'pokeBall'
+	| 'silverBottleCap'
+	| 'goldBottleCap';
 
 export const BONUS_ICON_URL: Record<BonusIconKey, string> = {
 	candy: '/images/bonuses/candy.png',
@@ -66,6 +70,10 @@ export const BONUS_ICON_URL: Record<BonusIconKey, string> = {
 	maxBattle: '/images/nav/max-battle.webp',
 	megaEnergy: '/images/bonuses/mega-energy.png',
 	ultraBall: '/images/bonuses/ultra-ball.png',
+	coinBag: '/images/bonuses/coin-bag.png',
+	pokeBall: '/images/bonuses/poke-ball.png',
+	silverBottleCap: '/images/bonuses/silver-bottle-cap.png',
+	goldBottleCap: '/images/bonuses/gold-bottle-cap.png',
 };
 
 /**
@@ -82,7 +90,7 @@ const RULES: ReadonlyArray<readonly [BonusIconKey, (text: string) => boolean]> =
 	['luckyTrinket', (t) => /lucky trinket/i.test(t)],
 	['superIncubator', (t) => /super incubator/i.test(t)],
 	['maxParticles', (t) => /max particles?/i.test(t)],
-	['remoteRaidPass', (t) => /remote raid pass/i.test(t)],
+	['remoteRaidPass', (t) => /remote raid/i.test(t)],
 	['raidPass', (t) => /(?<!remote )raid pass/i.test(t)],
 	['powerSpot', (t) => /power spots?/i.test(t) && !/max particles?/i.test(t)],
 	['maxBattle', (t) => /\bmax battles?/i.test(t)],
@@ -99,6 +107,10 @@ const RULES: ReadonlyArray<readonly [BonusIconKey, (text: string) => boolean]> =
 	['xp', (t) => /\bxp\b/i.test(t)],
 	['stardust', (t) => /stardust/i.test(t)],
 	['ultraBall', (t) => /ultra ball/i.test(t)],
+	['coinBag', (t) => /coin bags?/i.test(t)],
+	['pokeBall', (t) => /pok[eé]\s*balls?/i.test(t)],
+	['silverBottleCap', (t) => /silver bottle caps?/i.test(t)],
+	['goldBottleCap', (t) => /gold(?:en)? bottle caps?/i.test(t)],
 ];
 
 /** The plain text of a block. */

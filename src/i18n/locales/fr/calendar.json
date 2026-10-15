@@ -66,8 +66,10 @@
 		"groups": {
 			"featuredSpawns": "Apparitions vedettes",
 			"featuredRaids": "{{raid}} en vedette",
+			"raids": "{{raid}}",
 			"researchEncounters": "Rencontres d'Étude de terrain",
 			"eggs": "Œufs",
+			"eggsDistance": "{{eggs}} de {{distance}}",
 			"incense": "Encens",
 			"lures": "Modules Leurre"
 		},

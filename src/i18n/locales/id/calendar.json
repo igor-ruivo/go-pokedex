@@ -66,8 +66,10 @@
 		"groups": {
 			"featuredSpawns": "Spawn unggulan",
 			"featuredRaids": "{{raid}} unggulan",
+			"raids": "{{raid}}",
 			"researchEncounters": "Encounter Penelitian Lapangan",
 			"eggs": "Telur",
+			"eggsDistance": "{{eggs}} {{distance}}",
 			"incense": "Incense",
 			"lures": "Lure"
 		},

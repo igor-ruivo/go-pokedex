@@ -28,6 +28,19 @@ export interface IEntry {
 	kind?: string | undefined;
 	/** The Max Battle tier ('5' for a five-star battle), for the Pokémon of `maxBattles`. */
 	tier?: string | undefined;
+	/**
+	 * Set when the entry is only on offer during part of the event (a Max Battle boss with its own day): the start and the end, as event
+	 * dates are (local time encoded as UTC). The English `label` is not shown: only the stamps are, formatted in the site's language.
+	 */
+	window?:
+		| {
+				label: string;
+				start?: number | undefined;
+				end?: number | undefined;
+				/** The page names only the day: `start` and `end` are the two ends of it and no time of day is shown. */
+				allDay?: boolean | undefined;
+		  }
+		| undefined;
 	comment?: Record<GameLanguage, string>;
 }
 

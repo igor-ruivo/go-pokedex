@@ -66,8 +66,10 @@
 		"groups": {
 			"featuredSpawns": "Featured spawns",
 			"featuredRaids": "Featured {{raid}}s",
+			"raids": "{{raid}}s",
 			"researchEncounters": "Field Research encounters",
 			"eggs": "Eggs",
+			"eggsDistance": "{{distance}} {{eggs}}",
 			"incense": "Incense",
 			"lures": "Lures"
 		},

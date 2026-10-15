@@ -66,8 +66,10 @@
 		"groups": {
 			"featuredSpawns": "특별 출현",
 			"featuredRaids": "특별 {{raid}}",
+			"raids": "{{raid}}",
 			"researchEncounters": "필드리서치 조우",
 			"eggs": "알",
+			"eggsDistance": "{{distance}} {{eggs}}",
 			"incense": "향",
 			"lures": "루어 모듈"
 		},

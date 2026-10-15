@@ -66,8 +66,10 @@
 		"groups": {
 			"featuredSpawns": "特色出沒",
 			"featuredRaids": "特色{{raid}}",
+			"raids": "{{raid}}",
 			"researchEncounters": "田野調查遭遇",
 			"eggs": "蛋",
+			"eggsDistance": "{{distance}}{{eggs}}",
 			"incense": "薰香",
 			"lures": "誘餌"
 		},

@@ -66,8 +66,10 @@
 		"groups": {
 			"featuredSpawns": "Особые спавны",
 			"featuredRaids": "Особый {{raid}}",
+			"raids": "{{raid}}",
 			"researchEncounters": "Встречи по полевым исследованиям",
 			"eggs": "Яйца",
+			"eggsDistance": "{{eggs}} {{distance}}",
 			"incense": "Ладан",
 			"lures": "Приманки"
 		},

@@ -66,8 +66,10 @@
 		"groups": {
 			"featuredSpawns": "Apariciones destacadas",
 			"featuredRaids": "{{raid}} destacada",
+			"raids": "{{raid}}",
 			"researchEncounters": "Encuentros de Investigación de Campo",
 			"eggs": "Huevos",
+			"eggsDistance": "{{eggs}} de {{distance}}",
 			"incense": "Incienso",
 			"lures": "Módulos señuelo"
 		},

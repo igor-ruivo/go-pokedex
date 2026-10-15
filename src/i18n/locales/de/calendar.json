@@ -66,8 +66,10 @@
 		"groups": {
 			"featuredSpawns": "Vorgestellte Fundorte",
 			"featuredRaids": "Vorgestellte {{raid}}s",
+			"raids": "{{raid}}s",
 			"researchEncounters": "Feldforschungsbegegnungen",
 			"eggs": "Eier",
+			"eggsDistance": "{{distance}} {{eggs}}",
 			"incense": "Rauch",
 			"lures": "Lockmodule"
 		},

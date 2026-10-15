@@ -66,8 +66,10 @@
 		"groups": {
 			"featuredSpawns": "สปอว์นเด่น",
 			"featuredRaids": "{{raid}}เด่น",
+			"raids": "{{raid}}",
 			"researchEncounters": "การเผชิญหน้าจากงานวิจัยภาคสนาม",
 			"eggs": "ไข่",
+			"eggsDistance": "{{eggs}} {{distance}}",
 			"incense": "ยาดม",
 			"lures": "ตัวล่อ"
 		},

@@ -31,6 +31,7 @@ export const RichText = ({
 	className,
 	bullet,
 	fallbackBullet,
+	iconParagraphs,
 }: {
 	blocks: ReadonlyArray<IRichBlock>;
 	className?: string | undefined;
@@ -38,8 +39,15 @@ export const RichText = ({
 	/** Drawn for the points of a list that have none of their own, when others in that list do. */
 	fallbackBullet?: ReactNode;
 	bullet?: ReactNode | ((block: IRichBlock, index: number) => ReactNode);
+	/** Plain paragraphs (a post whose bonuses are not bullet points) that have an icon of their own are drawn like a one-point list. */
+	iconParagraphs?: boolean;
 }) => {
 	const out: Array<ReactNode> = [];
+	// with `iconParagraphs`, when any plain paragraph has an icon of its own all of them are drawn with one (the others get the default)
+	const paragraphMarks = blocks.map((b, k) =>
+		iconParagraphs && b.kind === 'text' && typeof bullet === 'function' ? bullet(b, k) : null
+	);
+	const paragraphIcons = paragraphMarks.some(Boolean);
 	let i = 0;
 	while (i < blocks.length) {
 		const block = blocks[i];
@@ -64,6 +72,24 @@ export const RichText = ({
 						</li>
 					))}
 				</List>
+			);
+			continue;
+		}
+		if (paragraphIcons && block.kind === 'text') {
+			// the paragraphs that follow each other are drawn as one list, the ones with nothing of their own getting the default icon
+			const start = i;
+			while (i < blocks.length && blocks[i].kind === 'text') i++;
+			out.push(
+				<ul key={start} className='r-rich-list r-rich-list--icon'>
+					{blocks.slice(start, i).map((item, k) => (
+						<li key={k} data-level={0}>
+							{paragraphMarks[start + k] ?? fallbackBullet}
+							<span>
+								<Runs runs={item.runs} />
+							</span>
+						</li>
+					))}
+				</ul>
 			);
 			continue;
 		}

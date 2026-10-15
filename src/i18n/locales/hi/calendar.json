@@ -66,8 +66,10 @@
 		"groups": {
 			"featuredSpawns": "फ़ीचर्ड स्पॉन",
 			"featuredRaids": "फ़ीचर्ड {{raid}}",
+			"raids": "{{raid}}",
 			"researchEncounters": "रिसर्च एनकाउंटर",
 			"eggs": "अंडे",
+			"eggsDistance": "{{distance}} {{eggs}}",
 			"incense": "इन्सेंस",
 			"lures": "ल्यूर"
 		},

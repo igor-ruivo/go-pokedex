@@ -66,8 +66,10 @@
 		"groups": {
 			"featuredSpawns": "Spawns em destaque",
 			"featuredRaids": "{{raid}} em destaque",
+			"raids": "{{raid}}",
 			"researchEncounters": "Encontros de Investigação de Campo",
 			"eggs": "Ovos",
+			"eggsDistance": "{{eggs}} de {{distance}}",
 			"incense": "Incenso",
 			"lures": "Módulos-Isco"
 		},

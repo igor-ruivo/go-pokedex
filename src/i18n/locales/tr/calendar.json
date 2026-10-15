@@ -66,8 +66,10 @@
 		"groups": {
 			"featuredSpawns": "Öne çıkan ortaya çıkışlar",
 			"featuredRaids": "Öne çıkan {{raid}}",
+			"raids": "{{raid}}",
 			"researchEncounters": "Alan Araştırması Karşılaşmaları",
 			"eggs": "Yumurtalar",
+			"eggsDistance": "{{distance}} {{eggs}}",
 			"incense": "Tütsü",
 			"lures": "Çekici Modül"
 		},

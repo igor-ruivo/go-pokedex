@@ -194,7 +194,7 @@ const groupByRange = (
 		const picked = pick(p);
 		if (picked.length > 0) g.sources.push(p);
 		for (const e of picked) {
-			const k = `${e.speciesId}-${e.kind ?? ''}`;
+			const k = `${e.speciesId}-${e.kind ?? ''}-${e.window?.start ?? ''}`;
 			if (g.seen.has(k)) continue;
 			g.seen.add(k);
 			g.entries.push(e);
@@ -373,6 +373,62 @@ const POKEBATTLER_SOURCE: SlotSourcePost = {
 	source: 'pokebattler',
 };
 
+/**
+ * A grid of chips where the entries with a window of their own (a Max Battle boss with its own day) come after the others, each
+ * window with its dates above it. Only the stamps are shown, formatted in the language of the site.
+ */
+const WindowedGrid = ({
+	entries,
+	endMap,
+	showForm,
+}: {
+	entries: Array<IEntry>;
+	endMap?: Map<string, number> | undefined;
+	showForm?: boolean | undefined;
+}) => {
+	const { currentLanguage } = useLanguage();
+	const windows = new Map<string, { start: number; end: number; allDay: boolean; entries: Array<IEntry> }>();
+	const plain: Array<IEntry> = [];
+	for (const entry of entries) {
+		const start = entry.window?.start;
+		const end = entry.window?.end;
+		if (start === undefined || end === undefined) {
+			plain.push(entry);
+			continue;
+		}
+		const allDay = !!entry.window?.allDay;
+		const key = `${start}-${end}-${allDay}`;
+		const group = windows.get(key) ?? { start, end, allDay, entries: [] };
+		group.entries.push(entry);
+		windows.set(key, group);
+	}
+	if (windows.size === 0) {
+		return <MiniGrid entries={entries} endMap={endMap} showForm={showForm} />;
+	}
+	// the same layout as the tiers of the raids: the group's content indented under its heading, a subsection for each window (the
+	// ones for the whole event first), so a group inside an indented one indents once more
+	return (
+		// a lone window needs no indentation: it is the only thing under the group's heading
+		<div className={plain.length === 0 && windows.size === 1 ? undefined : 'r-raids-body'}>
+			{plain.length > 0 && <MiniGrid entries={plain} endMap={endMap} showForm={showForm} />}
+			{[...windows.values()]
+				.sort((a, b) => a.start - b.start)
+				.map((w) => (
+					<div key={`${w.start}-${w.end}-${w.allDay}`} className='r-window'>
+						<div className='r-section-h r-window-head'>
+							<span className='r-section-h-icon'>
+								<img src='/images/nav/calendar.png' alt='' loading='lazy' />
+							</span>
+							{/* a window of a whole day shows the date only, no time of day */}
+							{w.allDay ? dayRange(w.start, w.end, currentLanguage) : dateRange(w.start, w.end, currentLanguage)}
+						</div>
+						<MiniGrid entries={w.entries} endMap={endMap} showForm={showForm} />
+					</div>
+				))}
+		</div>
+	);
+};
+
 const Group = ({
 	title,
 	entries,
@@ -417,7 +473,7 @@ const Group = ({
 					{title}
 				</div>
 			)}
-			<MiniGrid entries={entries} endMap={endMap} showForm={showForm} />
+			<WindowedGrid entries={entries} endMap={endMap} showForm={showForm} />
 		</div>
 	) : null;
 
@@ -665,6 +721,7 @@ const EventCard = ({
 									blocks={bonusBlocks}
 									className='r-bonuses-rich'
 									bullet={bonusBullet(bonusBlocks, post.bonusBlocks?.[GameLanguage.en])}
+									iconParagraphs
 									fallbackBullet={DEFAULT_BONUS_ICON}
 								/>
 							) : (
@@ -727,6 +784,7 @@ const EventCard = ({
 						title={t('calendar:events.groups.researchEncounters')}
 						entries={post.researches}
 						icon='/images/nav/research.png'
+						showForm
 					/>
 					<EventEggs entries={post.eggs} />
 					<Group
@@ -887,7 +945,44 @@ const EventsTab = () => {
  * Raid Pokémon by tier, each tier a section with its egg and its name (5★ and Mega, 3★, 1★), the Shadow ones of each tier in a
  * quieter section of their own, and any other raid after them. The Bosses tab and the raids of an event are laid out the same way.
  */
-const RaidTierGroups = ({
+const RaidTierGroups = (props: {
+	entries: Array<IEntry>;
+	endMap?: Map<string, number> | undefined;
+	plainHeadings?: boolean | undefined;
+}) => {
+	const { t } = useTranslation(['calendar']);
+	const { currentGameLanguage: gl } = useLanguage();
+	const { gamemasterPokemon } = usePokemon();
+	// the raids of an event: one "Raids" heading with the raid face, and the tiers (their egg and their dates) indented under it
+	const shadow = (id: string) => !!gamemasterPokemon[id]?.isShadow;
+	const subsections =
+		RAID_TIERS.reduce(
+			(count, tier) =>
+				count +
+				Number(props.entries.some((e) => tier.match(e.kind) && !shadow(e.speciesId))) +
+				Number(props.entries.some((e) => tier.match(e.kind) && shadow(e.speciesId))),
+			0
+		) + Number(props.entries.some((e) => !RAID_TIERS.some((tier) => tier.match(e.kind))));
+	// a single subsection needs no heading of its own above it: it is shown alone, with its own icon and no indentation
+	if (!props.plainHeadings || subsections <= 1) {
+		return <RaidTierSections {...props} />;
+	}
+	return (
+		<div className='r-raids'>
+			<div className='r-section-h r-raids-head'>
+				<span className='r-section-h-icon r-raids-art'>
+					<img src='/images/brand/raid-face.png' alt='' loading='lazy' />
+				</span>
+				{t('calendar:events.groups.raids', { raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)) })}
+			</div>
+			<div className='r-raids-body'>
+				<RaidTierSections {...props} />
+			</div>
+		</div>
+	);
+};
+
+const RaidTierSections = ({
 	entries,
 	endMap,
 	plainHeadings,
@@ -1012,8 +1107,9 @@ const RaidsTab = () => {
 		const seen = new Set<string>();
 		const current: Array<IEntry> = [];
 		for (const e of currentBosses) {
-			if (seen.has(e.speciesId)) continue;
-			seen.add(e.speciesId);
+			const key = `${e.speciesId}-`;
+			if (seen.has(key)) continue;
+			seen.add(key);
 			current.push(e);
 		}
 		// Every active event that brings raid bosses to "Now" (none when Now is backed only by the baseline current-rotation bosses).
@@ -1024,8 +1120,10 @@ const RaidsTab = () => {
 			for (const r of p.raids) {
 				const prev = endMap.get(r.speciesId);
 				if (prev === undefined || p.endDate < prev) endMap.set(r.speciesId, p.endDate);
-				if (seen.has(r.speciesId)) continue;
-				seen.add(r.speciesId);
+				// a boss with a window of its own is kept for each window
+				const key = `${r.speciesId}-${r.window?.start ?? ''}`;
+				if (seen.has(key)) continue;
+				seen.add(key);
 				current.push(r);
 			}
 		}
@@ -1120,7 +1218,7 @@ const SpawnsTab = () => {
 		for (const e of p.wild) {
 			const prev = endMap.get(e.speciesId);
 			if (prev === undefined || p.endDate < prev) endMap.set(e.speciesId, p.endDate);
-			const k = `${e.speciesId}-${e.kind ?? ''}`;
+			const k = `${e.speciesId}-${e.kind ?? ''}-${e.window?.start ?? ''}`;
 			if (nowSeen.has(k)) continue;
 			nowSeen.add(k);
 			nowSpawns.push(e);
@@ -1150,7 +1248,7 @@ const SpawnsTab = () => {
 				{activeKey === 'now' ? (
 					<div style={{ marginTop: 'var(--s4)' }}>
 						<SlotSource posts={nowSources} gl={gl} />
-						<MiniGrid entries={nowSpawns} endMap={endMap} />
+						<WindowedGrid entries={nowSpawns} endMap={endMap} />
 					</div>
 				) : slots.length === 0 ? (
 					<p className='r-muted' style={{ marginTop: 'var(--s4)' }}>
@@ -1159,7 +1257,7 @@ const SpawnsTab = () => {
 				) : (
 					<div style={{ marginTop: 'var(--s4)' }}>
 						<SlotSource posts={eventGroups.find((g) => g.label === activeKey)?.sources ?? []} gl={gl} />
-						<MiniGrid entries={eventGroups.find((g) => g.label === activeKey)?.entries ?? []} />
+						<WindowedGrid entries={eventGroups.find((g) => g.label === activeKey)?.entries ?? []} />
 					</div>
 				)}
 			</div>
@@ -1409,8 +1507,10 @@ const eggCommentLabel = (comment: string, t: TFunction): string =>
 	comment.trim().toUpperCase() === 'FROM FRIEND GIFTS' ? t('calendar:eggs.fromFriendGifts') : comment;
 
 /**
- * The eggs of an event, one section for each egg distance (with that egg's own picture), and, within a distance, the ones the
- * post says come another way (Adventure Sync rewards, friend gifts) in a section of their own.
+ * The eggs of an event under one "Eggs" heading (the 1 km egg), indented (when there is a single distance it is shown alone,
+ * without the heading and the indentation): one section for each egg distance (with that egg's own
+ * picture), and, within a distance, the ones the post says come another way (Adventure Sync rewards, friend gifts) in a section
+ * of their own.
  */
 const EventEggs = ({ entries }: { entries: Array<IEntry> }) => {
 	const { t } = useTranslation(['calendar']);
@@ -1419,12 +1519,21 @@ const EventEggs = ({ entries }: { entries: Array<IEntry> }) => {
 	const title = t('calendar:events.groups.eggs');
 	const known = new Set(EGG_TIERS.map(([k]) => k));
 	const sections: Array<ReactNode> = [];
+	// a single distance is shown alone, with no "Eggs" heading above it: its own title then says "Eggs" ("2 km Eggs")
+	const standalone =
+		EGG_TIERS.filter(([k]) => entries.some((e) => e.kind === k)).length === 1 &&
+		!entries.some((e) => !known.has(e.kind ?? ''));
 	for (const [k, label] of EGG_TIERS) {
 		const all = entries.filter((e) => e.kind === k);
 		if (all.length === 0) continue;
 		const icon = `/images/eggs/${k}km.png`;
 		sections.push(
-			<Group key={k} title={`${title} · ${label}`} entries={all.filter((e) => !e.comment?.[gl])} icon={icon} />
+			<Group
+				key={k}
+				title={standalone ? t('calendar:events.groups.eggsDistance', { distance: label, eggs: title }) : label}
+				entries={all.filter((e) => !e.comment?.[gl])}
+				icon={icon}
+			/>
 		);
 		const comments = new Map<string, Array<IEntry>>();
 		for (const e of all) {
@@ -1432,19 +1541,35 @@ const EventEggs = ({ entries }: { entries: Array<IEntry> }) => {
 			if (c) comments.set(c, [...(comments.get(c) ?? []), e]);
 		}
 		for (const [c, list] of comments) {
-			sections.push(<Group key={`${k}-${c}`} title={eggCommentLabel(c, t)} entries={list} centered />);
+			// indented under its distance, its title written on the left with no rule
+			sections.push(
+				<div key={`${k}-${c}`} className='r-raids-body'>
+					<Group title={eggCommentLabel(c, t)} entries={list} centered />
+				</div>
+			);
 		}
 	}
-	// an egg with no distance of its own
-	sections.push(
-		<Group
-			key='other'
-			title={title}
-			entries={entries.filter((e) => !known.has(e.kind ?? ''))}
-			icon='/images/eggs/10km.png'
-		/>
+	// an egg with no distance of its own sits right under the heading, before the distances
+	const other = entries.filter((e) => !known.has(e.kind ?? ''));
+	// a single distance needs no "Eggs" heading above it: it is shown alone, with its own egg and no indentation
+	if (standalone) {
+		return <>{sections}</>;
+	}
+	// one "Eggs" heading (with the 1 km egg) and the distances indented under it, as the tiers of the raids are
+	return (
+		<div className='r-raids'>
+			<div className='r-section-h r-raids-head'>
+				<span className='r-section-h-icon'>
+					<img src='/images/eggs/1km.png' alt='' loading='lazy' />
+				</span>
+				{title}
+			</div>
+			<div className='r-raids-body r-eggs-body'>
+				{other.length > 0 && <WindowedGrid entries={other} />}
+				{sections}
+			</div>
+		</div>
 	);
-	return <>{sections}</>;
 };
 
 const EggsTab = () => {
@@ -1479,8 +1604,10 @@ const EggsTab = () => {
 						</div>
 						{plain.length > 0 && <MiniGrid entries={plain} />}
 						{[...groups.entries()].map(([c, list]) => (
-							<div key={c}>
-								<div className='r-section-h'>{eggCommentLabel(c, t)}</div>
+							<div key={c} className='r-raids-body'>
+								<div className='r-section-h' data-centered=''>
+									{eggCommentLabel(c, t)}
+								</div>
 								<MiniGrid entries={list} />
 							</div>
 						))}

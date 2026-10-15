@@ -895,11 +895,10 @@
 	height: 1px;
 	background: var(--border);
 }
-.rvmp .r-section-h[data-centered]::before {
-	content: '';
-	flex: 1;
-	height: 1px;
-	background: var(--border);
+/* a sub-section's title (the eggs that come another way): written on the left, with no rule around it */
+.rvmp .r-section-h[data-centered]::before,
+.rvmp .r-section-h[data-centered]::after {
+	content: none;
 }
 .rvmp .r-section-h-icon {
 	flex: none;
@@ -9127,4 +9126,43 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-shell--dex .r-
 	max-height: 110px;
 	overflow-y: auto;
 	overscroll-behavior: contain;
+}
+
+/* ---- the raids of an event: a heading with the home page's raid badge, the tiers indented under it ---- */
+.rvmp .r-raids-head {
+	gap: var(--s2);
+}
+/* the raid boss's face is white: on the light theme's plate it is drawn dark instead */
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-raids-art > img {
+	filter: invert(1) opacity(0.7);
+}
+.rvmp .r-raids-body {
+	margin-left: var(--s3);
+	padding-left: var(--s4);
+	border-left: 2px solid var(--border);
+}
+/* an egg distance that follows another one (or its sub-sections) gets room above it (the raid tiers keep their own spacing) */
+.rvmp .r-eggs-body > * + .r-group {
+	margin-top: var(--s7);
+}
+/* the first tier sits right under the heading */
+.rvmp .r-raids-body > .r-group:first-child {
+	margin-top: 0;
+}
+
+/* a subsection for each window of the entries of a group (its dates as the heading), spaced like the raid tiers */
+.rvmp .r-window {
+	margin-top: var(--s4);
+}
+.rvmp .r-raids-body > :first-child {
+	margin-top: var(--s3);
+}
+.rvmp .r-window .r-window-head {
+	margin: 0 0 var(--s3);
+	font-variant-numeric: tabular-nums;
+}
+
+/* the sections of an event (bonuses, spawns, raids, eggs…) get room between them, like the distances inside the eggs */
+.rvmp .r-event-body > * + :is(.r-group, .r-raids, .r-section-h) {
+	margin-top: calc(var(--s5) + var(--s4));
 }

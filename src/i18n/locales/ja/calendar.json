@@ -66,8 +66,10 @@
 		"groups": {
 			"featuredSpawns": "注目の出現",
 			"featuredRaids": "注目の{{raid}}",
+			"raids": "{{raid}}",
 			"researchEncounters": "フィールドリサーチの出会い",
 			"eggs": "タマゴ",
+			"eggsDistance": "{{distance}}{{eggs}}",
 			"incense": "お香",
 			"lures": "ルアーモジュール"
 		},
