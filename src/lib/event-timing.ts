@@ -19,7 +19,9 @@ export const timeLeft = (end: number, now: number): string => {
  *  but for the start boundary and with "in …" / tomorrow / today wording. */
 export const startsIn = (start: number, now: number): string => {
 	const ms = start - now;
-	const d = Math.round(ms / 86_400_000);
+	// calendar days, not 24-hour spans: an event at 6 AM the day after tomorrow is not "tomorrow" at 10 PM, 31 hours before. Both stamps are
+	// event time (local time encoded as UTC), so a UTC day is the viewer's own day.
+	const d = Math.floor(start / 86_400_000) - Math.floor(now / 86_400_000);
 	if (d >= 2) return i18n.t('calendar:events.startsIn.days', { count: d });
 	if (d === 1) return i18n.t('calendar:events.startsIn.tomorrow');
 	if (ms <= 0) return i18n.t('calendar:events.startsIn.today');

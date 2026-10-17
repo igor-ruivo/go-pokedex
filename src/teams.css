@@ -1027,31 +1027,36 @@
 }
 .rvmp .r-tm-hero[data-tier='elite'],
 .rvmp .r-tm-mini[data-tier='elite'],
-.rvmp .r-tm-board-card[data-tier='elite'] {
+.rvmp .r-tm-board-card[data-tier='elite'],
+.rvmp .r-tm-board-score[data-tier='elite'] {
 	--tier-a: var(--tier-elite-a);
 	--tier-b: var(--tier-elite-b);
 }
 .rvmp .r-tm-hero[data-tier='strong'],
 .rvmp .r-tm-mini[data-tier='strong'],
-.rvmp .r-tm-board-card[data-tier='strong'] {
+.rvmp .r-tm-board-card[data-tier='strong'],
+.rvmp .r-tm-board-score[data-tier='strong'] {
 	--tier-a: var(--tier-strong-a);
 	--tier-b: var(--tier-strong-b);
 }
 .rvmp .r-tm-hero[data-tier='solid'],
 .rvmp .r-tm-mini[data-tier='solid'],
-.rvmp .r-tm-board-card[data-tier='solid'] {
+.rvmp .r-tm-board-card[data-tier='solid'],
+.rvmp .r-tm-board-score[data-tier='solid'] {
 	--tier-a: var(--tier-solid-a);
 	--tier-b: var(--tier-solid-b);
 }
 .rvmp .r-tm-hero[data-tier='shaky'],
 .rvmp .r-tm-mini[data-tier='shaky'],
-.rvmp .r-tm-board-card[data-tier='shaky'] {
+.rvmp .r-tm-board-card[data-tier='shaky'],
+.rvmp .r-tm-board-score[data-tier='shaky'] {
 	--tier-a: var(--tier-shaky-a);
 	--tier-b: var(--tier-shaky-b);
 }
 .rvmp .r-tm-hero[data-tier='risky'],
 .rvmp .r-tm-mini[data-tier='risky'],
-.rvmp .r-tm-board-card[data-tier='risky'] {
+.rvmp .r-tm-board-card[data-tier='risky'],
+.rvmp .r-tm-board-score[data-tier='risky'] {
 	--tier-a: var(--tier-risky-a);
 	--tier-b: var(--tier-risky-b);
 }

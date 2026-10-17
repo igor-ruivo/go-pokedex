@@ -114,6 +114,9 @@ export const TeamCard = ({
 		},
 	];
 
+	// the one the list is ordered by comes first, and is the big one
+	const ordered = primary === 'score' ? metrics : [...metrics].reverse();
+
 	// The card is not itself a button: it holds the favorite star, and a button can't hold a button.
 	return (
 		<div
@@ -140,9 +143,10 @@ export const TeamCard = ({
 				<FavoriteStar league={league} members={team.members} data={data} />
 			</span>
 			{!team.unrated && (
-				<span className='r-tm-board-score'>
+				// the plate takes the colour of the metric the list is ordered by, not always the team's own tier
+				<span className='r-tm-board-score' data-tier={ordered[0].tier}>
 					{/* both metrics are named; the one the list is ordered by is the big one */}
-					{(primary === 'score' ? metrics : [...metrics].reverse()).map((metric, n) => (
+					{ordered.map((metric, n) => (
 						<span
 							key={metric.label}
 							className='r-tm-board-metric'
