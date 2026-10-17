@@ -2,6 +2,7 @@ import './theme.css';
 import './rvmp.css';
 import './components.css';
 import './teams.css';
+import './gbl.css';
 import './home.css';
 import './menu.css';
 

@@ -24,6 +24,8 @@ export const dpsUrl = (type: string) =>
 	`https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/${type}-raid-dps-rank.json`;
 export const eventsUrl = 'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/events.json';
 export const seasonUrl = 'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/season.json';
+export const gblSeasonUrl =
+	'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/gbl-season.json';
 export const specialBossesUrl =
 	'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/leekduck-special-raid-bosses.json';
 export const spotlightHoursUrl =

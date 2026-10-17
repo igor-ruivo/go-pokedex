@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { type ReactNode, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useLanguage } from '../contexts/language-context';
@@ -21,6 +21,7 @@ export const PokeMini = ({
 	catchable,
 	forceShadow,
 	maxForm,
+	badge,
 }: {
 	speciesId: string;
 	shiny?: boolean | undefined;
@@ -31,6 +32,8 @@ export const PokeMini = ({
 	forceShadow?: boolean | undefined;
 	/** A Max Battle Pokémon: a Dynamax one wears the Dynamax cloud over its picture, a Gigantamax one is drawn with its own artwork. */
 	maxForm?: string | undefined;
+	/** Drawn over the tile's top left corner (the rank a GO Battle League reward is met at). */
+	badge?: ReactNode;
 }) => {
 	const { gamemasterPokemon } = usePokemon();
 	const { currentGameLanguage: gl } = useLanguage();
@@ -54,6 +57,7 @@ export const PokeMini = ({
 			data-catchable={catchable ? '' : undefined}
 			style={{ ['--tc' as string]: typeVar(p.types[0]) }}
 		>
+			{badge}
 			{shiny && <SparkleIcon className='r-mini-shiny' />}
 			{isShadow && <ShadowMark />}
 			{badges.length > 0 && (

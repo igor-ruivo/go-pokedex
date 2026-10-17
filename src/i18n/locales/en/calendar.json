@@ -84,6 +84,22 @@
 			"seconds": "in {{count}}s",
 			"tomorrow": "tomorrow",
 			"today": "today"
+		},
+		"gbl": {
+			"title": "GO Battle League: {{season}}",
+			"rankUp": "Guaranteed rank-up encounters",
+			"rankUpHint": "You can meet each of these once per season, at the rank shown.",
+			"standard": "Standard encounters",
+			"standardHint": "Reward encounters all season, from the rank shown on.",
+			"surprise": "Surprise encounter with a Legendary Pokémon!",
+			"surpriseShort": "Legendary?",
+			"attackChanges": "Attack changes",
+			"attackAvailability": "Attack availability updates",
+			"verdict": {
+				"buff": "Buffed",
+				"adjusted": "Adjusted",
+				"nerf": "Nerfed"
+			}
 		}
 	},
 	"rockets": {

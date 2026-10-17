@@ -84,6 +84,22 @@
 			"seconds": "{{count}} 秒後",
 			"tomorrow": "明天",
 			"today": "今天"
+		},
+		"gbl": {
+			"title": "GO對戰聯盟：{{season}}",
+			"rankUp": "升級時必定遭遇",
+			"rankUpHint": "每個賽季可在所示等級遭遇一次。",
+			"standard": "一般遭遇",
+			"standardHint": "整個賽季的獎勵遭遇，自所示等級起。",
+			"surprise": "與傳說寶可夢的驚喜遭遇！",
+			"surpriseShort": "傳說？",
+			"attackChanges": "招式更動",
+			"attackAvailability": "可學會的招式更新",
+			"verdict": {
+				"buff": "強化",
+				"adjusted": "調整",
+				"nerf": "弱化"
+			}
 		}
 	},
 	"rockets": {

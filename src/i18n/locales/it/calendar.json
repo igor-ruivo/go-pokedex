@@ -84,6 +84,22 @@
 			"seconds": "tra {{count}}s",
 			"tomorrow": "domani",
 			"today": "oggi"
+		},
+		"gbl": {
+			"title": "Lega Lotte GO: {{season}}",
+			"rankUp": "Incontri garantiti all'avanzamento di grado",
+			"rankUpHint": "Ognuno si può incontrare una volta a stagione, al grado indicato.",
+			"standard": "Incontri standard",
+			"standardHint": "Incontri premio per tutta la stagione, dal grado indicato in su.",
+			"surprise": "Incontro a sorpresa con un Pokémon leggendario!",
+			"surpriseShort": "Leggendario?",
+			"attackChanges": "Modifiche agli attacchi",
+			"attackAvailability": "Aggiornamenti sulla disponibilità degli attacchi",
+			"verdict": {
+				"buff": "Potenziato",
+				"adjusted": "Modificato",
+				"nerf": "Indebolito"
+			}
 		}
 	},
 	"rockets": {

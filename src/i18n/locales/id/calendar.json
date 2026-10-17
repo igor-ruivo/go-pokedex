@@ -84,6 +84,22 @@
 			"seconds": "dalam {{count}}d",
 			"tomorrow": "besok",
 			"today": "hari ini"
+		},
+		"gbl": {
+			"title": "GO Battle League: {{season}}",
+			"rankUp": "Pertemuan pasti saat naik peringkat",
+			"rankUpHint": "Tiap Pokémon bisa ditemui sekali per musim, pada peringkat yang ditunjukkan.",
+			"standard": "Pertemuan standar",
+			"standardHint": "Pertemuan hadiah sepanjang musim, mulai dari peringkat yang ditunjukkan.",
+			"surprise": "Pertemuan kejutan dengan Pokémon Legendaris!",
+			"surpriseShort": "Legendaris?",
+			"attackChanges": "Perubahan serangan",
+			"attackAvailability": "Pembaruan ketersediaan serangan",
+			"verdict": {
+				"buff": "Diperkuat",
+				"adjusted": "Disesuaikan",
+				"nerf": "Diperlemah"
+			}
 		}
 	},
 	"rockets": {

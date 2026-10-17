@@ -84,6 +84,22 @@
 			"seconds": "{{count}}秒後",
 			"tomorrow": "明日",
 			"today": "今日"
+		},
+		"gbl": {
+			"title": "GOバトルリーグ：{{season}}",
+			"rankUp": "ランクアップ時に必ず出会えるポケモン",
+			"rankUpHint": "シーズンに1回、表示のランクで出会えます。",
+			"standard": "通常のエンカウント",
+			"standardHint": "シーズン中、表示のランク以上のごほうびエンカウントで出会えます。",
+			"surprise": "伝説のポケモンとのサプライズエンカウント！",
+			"surpriseShort": "伝説？",
+			"attackChanges": "わざの変更",
+			"attackAvailability": "覚えられるわざの変更",
+			"verdict": {
+				"buff": "強化",
+				"adjusted": "調整",
+				"nerf": "弱体化"
+			}
 		}
 	},
 	"rockets": {

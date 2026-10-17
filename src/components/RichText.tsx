@@ -10,6 +10,7 @@ const Runs = ({ runs }: { runs: ReadonlyArray<IRichRun> }) => (
 			let node: ReactNode = parts;
 			if (run.bold) node = <strong>{node}</strong>;
 			if (run.italic) node = <em>{node}</em>;
+			if (run.strike) node = <del>{node}</del>;
 			if (run.href) {
 				node = (
 					<a href={run.href} target='_blank' rel='noopener noreferrer'>

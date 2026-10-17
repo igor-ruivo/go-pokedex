@@ -1,0 +1,278 @@
+/* ============================================================================
+   The GO Battle League card of the Events tab: the season's reward encounters, the attack changes (BUFFED / ADJUSTED / NERFED, a
+   list each) and the Pokémon that learn new attacks. Plain surfaces and borders like the rest of the app; the theme's --pos / --neg /
+   --warn colour only the small marks (a glyph, a badge's text), never a background or a border.
+   ============================================================================ */
+
+.rvmp .r-gbl-section {
+	margin-bottom: 40px;
+}
+.rvmp .r-gbl-hint {
+	margin: 0 0 var(--s3);
+	font-size: 12.5px;
+	font-weight: 600;
+	color: var(--text-dim);
+}
+
+/* ---- reward encounters: the site's tiles at their usual size, five to a row (fewer where the screen is narrower), centred ---- */
+.rvmp .r-gbl-encounters {
+	--gap: var(--s2);
+	--tile: 86px;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: var(--gap);
+	/* room for five tiles, so the sixth wraps */
+	max-width: calc(5 * var(--tile) + 4 * var(--gap));
+	margin: 0 auto var(--s3);
+}
+.rvmp .r-gbl-encounters > .r-mini {
+	flex: none;
+	width: var(--tile);
+	/* the tile's usual padding is a percentage, which in a flex row would be the row's width and not the tile's */
+	padding: 3.5px;
+}
+
+/* the rank's badge over the tile's top left corner */
+.rvmp .r-gbl-rank {
+	position: absolute;
+	z-index: 1;
+	top: 3%;
+	left: 3%;
+	width: 36cqw;
+	aspect-ratio: 1;
+	pointer-events: none;
+}
+.rvmp .r-gbl-rank > img:not(.r-gbl-rank-ring) {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	object-position: left top;
+}
+/* the number: inside the shield, or on the plate above a numbered medal */
+.rvmp .r-gbl-rank b {
+	position: absolute;
+	left: 50%;
+	top: 15%;
+	transform: translateX(-50%);
+	font-family: var(--font-display);
+	font-size: 12cqw;
+	font-weight: 900;
+	line-height: 1;
+	color: #fff;
+	text-shadow: 0 1px 2px rgb(0 0 0 / 0.6);
+	white-space: nowrap;
+}
+.rvmp .r-gbl-rank[data-numbered] {
+	/* the numbered medals are taller than they are wide */
+	width: 40cqw;
+	aspect-ratio: auto;
+}
+.rvmp .r-gbl-rank[data-numbered] > img:not(.r-gbl-rank-ring) {
+	height: auto;
+}
+.rvmp .r-gbl-rank[data-numbered] b {
+	top: 2%;
+	font-size: 8.5cqw;
+}
+.rvmp .r-gbl-rank-ring {
+	position: absolute;
+	height: auto;
+	transform: translate(-50%, -50%);
+}
+/* the surprise Legendary: a question mark where the Pokémon would be */
+.rvmp .r-gbl-surprise {
+	border-style: dashed;
+	border-color: var(--border-strong);
+}
+.rvmp .r-gbl-surprise > b {
+	font-family: var(--font-display);
+	font-size: 34cqw;
+	font-weight: 900;
+	line-height: 1;
+	color: var(--text-faint);
+}
+
+/* ---- attack changes ---- */
+.rvmp .r-gbl-verdict {
+	--v: var(--warn);
+	margin-top: 40px;
+}
+.rvmp .r-section-h + .r-gbl-verdict {
+	margin-top: var(--s4);
+}
+.rvmp .r-gbl-verdict[data-verdict='buff'] {
+	--v: var(--pos);
+}
+.rvmp .r-gbl-verdict[data-verdict='nerf'] {
+	--v: var(--neg);
+}
+/* the title of a list: big and uppercase, its glyph the only colour */
+.rvmp .r-gbl-verdict-h {
+	display: flex;
+	align-items: center;
+	gap: var(--s2);
+	margin: 0 0 var(--s3);
+	font-family: var(--font-display);
+	font-size: 16px;
+	font-weight: 900;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--text);
+}
+.rvmp .r-gbl-verdict-h span {
+	font-size: 12px;
+	color: var(--v);
+}
+.rvmp .r-gbl-verdict-h em {
+	margin-left: auto;
+	font-style: normal;
+	font-size: 12px;
+	letter-spacing: 0;
+	color: var(--text-dim);
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-gbl-moves {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+	gap: var(--s2);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.rvmp .r-gbl-move {
+	min-width: 0;
+	padding: var(--s3);
+	border: 1px solid var(--border);
+	border-radius: var(--r-sm);
+	background: var(--surface-2);
+}
+.rvmp .r-gbl-move-head {
+	display: flex;
+	align-items: center;
+	gap: var(--s2);
+	flex-wrap: wrap;
+}
+.rvmp .r-gbl-move-head > a {
+	font-size: 14.5px;
+	font-weight: 800;
+	overflow-wrap: anywhere;
+}
+.rvmp .r-gbl-move-head > a:hover {
+	text-decoration: underline;
+}
+/* Fast / Charged: a title and a rule above each group of moves */
+.rvmp .r-gbl-kind-group + .r-gbl-kind-group {
+	margin-top: var(--s4);
+}
+.rvmp .r-gbl-kind-h {
+	display: flex;
+	align-items: center;
+	gap: var(--s2);
+	margin: 0 0 var(--s2);
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--text-dim);
+}
+.rvmp .r-gbl-kind-h::after {
+	content: '';
+	flex: 1;
+	height: 1px;
+	background: var(--border);
+}
+/* the post's own wording of a move's changes, one bullet point per line, each with the arrow of what it does */
+.rvmp .r-gbl-text {
+	margin-top: var(--s2);
+	font-size: 12.5px;
+	font-weight: 600;
+}
+.rvmp .r-gbl-text .r-rich-list {
+	gap: 4px;
+	margin: 0;
+}
+.rvmp .r-gbl-text .r-rich-list li {
+	align-items: baseline;
+	gap: 8px;
+}
+.rvmp .r-gbl-arrow {
+	flex: none;
+	width: 10px;
+	font-size: 9px;
+	text-align: center;
+	color: var(--text-faint);
+}
+.rvmp .r-gbl-arrow[data-dir='buff'] {
+	color: var(--pos);
+}
+.rvmp .r-gbl-arrow[data-dir='nerf'] {
+	color: var(--neg);
+}
+.rvmp .r-gbl-text del {
+	color: var(--text-faint);
+	font-variant-numeric: tabular-nums;
+}
+
+/* ---- attack availability: a row per attack, the attack on the left and its Pokémon inline beside it ---- */
+.rvmp .r-gbl-learns {
+	display: grid;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.rvmp .r-gbl-learn {
+	display: grid;
+	grid-template-columns: minmax(150px, 220px) minmax(0, 1fr);
+	align-items: center;
+	gap: var(--s3) var(--s4);
+	padding: var(--s3) 0;
+	border-top: 1px solid var(--border);
+}
+.rvmp .r-gbl-learn:first-child {
+	border-top: 0;
+	padding-top: 0;
+}
+@media (max-width: 560px) {
+	.rvmp .r-gbl-learn {
+		grid-template-columns: minmax(0, 1fr);
+	}
+	/* the chips line up under the attack's name, past its icon */
+	.rvmp .r-gbl-learn .r-gbl-chips {
+		margin-left: calc(28px + var(--s2));
+	}
+}
+.rvmp .r-gbl-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+.rvmp .r-gbl-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	max-width: 100%;
+	padding: 4px 14px 4px 5px;
+	border: 1px solid var(--border);
+	border-radius: var(--r-pill);
+	background: var(--surface);
+	font-size: 12.5px;
+	font-weight: 700;
+	transition: border-color 0.14s ease;
+}
+.rvmp .r-gbl-chip:hover {
+	border-color: var(--border-strong);
+}
+.rvmp .r-gbl-chip img {
+	flex: none;
+	width: 28px;
+	height: 28px;
+	object-fit: contain;
+}
+.rvmp .r-gbl-chip span {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}

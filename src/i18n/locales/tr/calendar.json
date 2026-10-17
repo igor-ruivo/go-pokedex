@@ -84,6 +84,22 @@
 			"seconds": "{{count}}sn sonra",
 			"tomorrow": "yarın",
 			"today": "bugün"
+		},
+		"gbl": {
+			"title": "GO Maç Ligi: {{season}}",
+			"rankUp": "Rütbe atlayınca garantili karşılaşmalar",
+			"rankUpHint": "Her biriyle sezon başına bir kez, gösterilen rütbede karşılaşılır.",
+			"standard": "Standart karşılaşmalar",
+			"standardHint": "Sezon boyunca ödül karşılaşmaları, gösterilen rütbeden itibaren.",
+			"surprise": "Efsanevi bir Pokémon ile sürpriz karşılaşma!",
+			"surpriseShort": "Efsanevi?",
+			"attackChanges": "Saldırı değişiklikleri",
+			"attackAvailability": "Saldırı kullanım güncellemeleri",
+			"verdict": {
+				"buff": "Güçlendirildi",
+				"adjusted": "Ayarlandı",
+				"nerf": "Zayıflatıldı"
+			}
 		}
 	},
 	"rockets": {

@@ -4,7 +4,9 @@ import { useLanguage } from '../contexts/language-context';
 import { useSeenEvents } from '../contexts/seen-events-context';
 import { leekduckPosts } from '../lib/calendar-events';
 import { nowAsEventTime } from '../lib/format';
+import { gblEventId } from '../lib/gbl';
 import { useCalendar } from '../queries/calendar';
+import { useGblSeason } from '../queries/gbl';
 
 /**
  * How many currently-listed events (Events tab, including the season card)
@@ -30,6 +32,7 @@ export const useUnseenEvents = (): { count: number; ready: boolean } => {
 		maxMondaysFetchCompleted,
 		raidHoursFetchCompleted,
 	} = useCalendar();
+	const { gblSeason } = useGblSeason();
 	const { seenIds } = useSeenEvents();
 	const { currentGameLanguage: gl } = useLanguage();
 
@@ -41,7 +44,9 @@ export const useUnseenEvents = (): { count: number; ready: boolean } => {
 			(p) => p && p.endDate >= now && p.availableLocales.includes(gl)
 		);
 		const all = seasonFetchCompleted && season ? [season, ...events] : events;
-		return { count: all.filter((p) => !seenIds.has(p.id)).length, ready: true };
+		// the GO Battle League card follows the season's, so it only counts with it
+		const gblUnseen = seasonFetchCompleted && season && gblSeason && !seenIds.has(gblEventId(gblSeason)) ? 1 : 0;
+		return { count: all.filter((p) => !seenIds.has(p.id)).length + gblUnseen, ready: true };
 	}, [
 		posts,
 		spotlightHours,
@@ -53,6 +58,7 @@ export const useUnseenEvents = (): { count: number; ready: boolean } => {
 		raidHoursFetchCompleted,
 		seasonFetchCompleted,
 		season,
+		gblSeason,
 		seenIds,
 		gl,
 	]);

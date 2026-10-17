@@ -84,6 +84,22 @@
 			"seconds": "in {{count}} Sek.",
 			"tomorrow": "morgen",
 			"today": "heute"
+		},
+		"gbl": {
+			"title": "GO-Kampfliga: {{season}}",
+			"rankUp": "Garantierte Rangaufstiegs-Begegnungen",
+			"rankUpHint": "Jedes davon einmalig pro Saison beim angezeigten Rang.",
+			"standard": "Standard-Begegnungen",
+			"standardHint": "Belohnungsbegegnungen die ganze Saison über, ab dem angezeigten Rang.",
+			"surprise": "Überraschungsbegegnung mit einem Legendären Pokémon!",
+			"surpriseShort": "Legendär?",
+			"attackChanges": "Angriffsänderungen",
+			"attackAvailability": "Neu erlernbare Angriffe",
+			"verdict": {
+				"buff": "Gestärkt",
+				"adjusted": "Angepasst",
+				"nerf": "Abgeschwächt"
+			}
 		}
 	},
 	"rockets": {

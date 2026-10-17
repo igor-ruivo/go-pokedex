@@ -84,6 +84,22 @@
 			"seconds": "en {{count}}s",
 			"tomorrow": "mañana",
 			"today": "hoy"
+		},
+		"gbl": {
+			"title": "Liga Combates GO: {{season}}",
+			"rankUp": "Encuentros garantizados al subir de rango",
+			"rankUpHint": "Puedes encontrar cada uno una vez por temporada, en el rango indicado.",
+			"standard": "Encuentros estándar",
+			"standardHint": "Encuentros de recompensa durante toda la temporada, a partir del rango indicado.",
+			"surprise": "¡Encuentro sorpresa con un Pokémon legendario!",
+			"surpriseShort": "¿Legendario?",
+			"attackChanges": "Cambios de ataques",
+			"attackAvailability": "Novedades en la disponibilidad de ataques",
+			"verdict": {
+				"buff": "Mejorado",
+				"adjusted": "Ajustado",
+				"nerf": "Debilitado"
+			}
 		}
 	},
 	"rockets": {

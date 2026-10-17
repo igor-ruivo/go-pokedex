@@ -84,6 +84,22 @@
 			"seconds": "{{count}}초 후",
 			"tomorrow": "내일",
 			"today": "오늘"
+		},
+		"gbl": {
+			"title": "GO배틀리그: {{season}}",
+			"rankUp": "랭크 업 보장 인카운터",
+			"rankUpHint": "시즌당 한 번, 표시된 랭크에서 만날 수 있습니다.",
+			"standard": "일반 인카운터",
+			"standardHint": "시즌 내내 표시된 랭크부터 보상 인카운터에서 만날 수 있습니다.",
+			"surprise": "전설의 포켓몬과의 깜짝 인카운터!",
+			"surpriseShort": "전설?",
+			"attackChanges": "기술 변경",
+			"attackAvailability": "배울 수 있는 기술 변경",
+			"verdict": {
+				"buff": "강화",
+				"adjusted": "조정",
+				"nerf": "약화"
+			}
 		}
 	},
 	"rockets": {

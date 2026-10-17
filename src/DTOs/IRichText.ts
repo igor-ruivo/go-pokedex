@@ -3,6 +3,8 @@ export interface IRichRun {
 	text: string;
 	bold?: true;
 	italic?: true;
+	/** Struck through: the value a change replaces ("45 → 60 power"). */
+	strike?: true;
 	/** Where a link goes (an absolute URL). */
 	href?: string;
 }

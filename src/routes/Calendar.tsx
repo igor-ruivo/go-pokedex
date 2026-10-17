@@ -1,10 +1,12 @@
 import type { TFunction } from 'i18next';
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent, ReactNode } from 'react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { bonusBullet, BonusIcons, DEFAULT_BONUS_ICON } from '../components/BonusBullet';
+import { EventActions } from '../components/EventActions';
+import { GblSeasonCard } from '../components/GblSeason';
 import { IconTabBar } from '../components/IconTabBar';
 import { PokeMini } from '../components/PokeMini';
 import { RichText } from '../components/RichText';
@@ -36,11 +38,13 @@ import {
 	nowAsEventTime,
 	sentenceCase,
 } from '../lib/format';
+import { gblEventId } from '../lib/gbl';
 import { BONUS_ICON_URL, bonusIcons } from '../lib/milestone-icons';
 import { CALENDAR_TABS, type CalendarTab, R } from '../lib/nav';
 import { sortByCalendarRelevance, useRelevanceSets } from '../lib/relevance';
 import { scrollOneStep } from '../lib/scroll-step';
 import { useCalendar } from '../queries/calendar';
+import { useGblSeason } from '../queries/gbl';
 import { usePokemon } from '../queries/pokemon';
 import { useGameTranslationsData } from '../utils/game-translations-store';
 import gameTranslator, { GameTranslatorKeys, gameTypeDisplayTranslator } from '../utils/GameTranslator';
@@ -639,17 +643,6 @@ const EventCard = ({
 	const rewardReference = post.rewardBlocks?.[GameLanguage.en];
 	// the major milestone bonuses of the season, or of an event with a GO Pass
 	const milestones = post.milestoneBonuses?.[gl];
-	// the link to this very event: the Events tab opens it expanded and scrolls to it
-	const [copied, setCopied] = useState(false);
-	const copyLink = async () => {
-		try {
-			await navigator.clipboard.writeText(`${window.location.origin}${R.calendarEvent(post.id)}`);
-			setCopied(true);
-			window.setTimeout(() => setCopied(false), 1800);
-		} catch {
-			// no clipboard access (an insecure page, a blocked permission): the button simply does nothing
-		}
-	};
 	// A Spotlight Hour, a Max Monday (a day of Max Battles led by one Dynamax Pokémon) and Raid Hours are shown the same way: their picture
 	// with the featured Pokémon on it.
 	const maxMons = post.maxBattles ?? [];
@@ -793,32 +786,7 @@ const EventCard = ({
 						icon='/images/bonuses/incense-plain.png'
 					/>
 					<Group title={t('calendar:events.groups.lures')} entries={post.lures} icon={BONUS_ICON_URL.lure} />
-					<div className='r-event-actions'>
-						<button
-							type='button'
-							className='r-ext-link r-copy-link'
-							data-done={copied ? '' : undefined}
-							onClick={(e) => {
-								e.stopPropagation();
-								void copyLink();
-							}}
-						>
-							{copied ? t('calendar:events.linkCopied') : t('calendar:events.copyLink')}
-							<span aria-hidden='true'>{copied ? '✓' : '⧉'}</span>
-						</button>
-						{(post.url[gl] || post.url[GameLanguage.en]) && (
-							<a
-								className='r-ext-link'
-								href={post.url[gl] || post.url[GameLanguage.en]}
-								target='_blank'
-								rel='noopener noreferrer'
-								onClick={(e) => e.stopPropagation()}
-							>
-								{t('calendar:events.readAnnouncement')}
-								<span aria-hidden='true'>↗</span>
-							</a>
-						)}
-					</div>
+					<EventActions eventId={post.id} announcementUrl={post.url[gl] || post.url[GameLanguage.en]} />
 				</div>
 			)}
 		</div>
@@ -839,6 +807,8 @@ const EventsTab = () => {
 		maxMondaysFetchCompleted,
 		raidHoursFetchCompleted,
 	} = useCalendar();
+	// the GO Battle League post of the season is a card of its own, right after the Season's
+	const { gblSeason } = useGblSeason();
 	// the cards name and draw the Pokémon an event features, so they wait for the species data too
 	const { fetchCompleted: pokemonFetchCompleted } = usePokemon();
 	// An event named in the link (?event=…, from the Home page) starts open, and the page scrolls to it once it is drawn.
@@ -895,7 +865,12 @@ const EventsTab = () => {
 
 	// the linked event: opened (and marked seen) as soon as it is in the list, and scrolled into view once, below the app bar
 	useEffect(() => {
-		if (!linkedId || scrolledTo.current === linkedId || !list.some((p) => p.id === linkedId)) return;
+		if (
+			!linkedId ||
+			scrolledTo.current === linkedId ||
+			!(list.some((p) => p.id === linkedId) || (gblSeason && gblEventId(gblSeason) === linkedId))
+		)
+			return;
 		scrolledTo.current = linkedId;
 		setOpenId(linkedId);
 		markSeen(linkedId);
@@ -908,33 +883,54 @@ const EventsTab = () => {
 				behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
 			});
 		});
-	}, [linkedId, list, markSeen]);
+	}, [linkedId, list, gblSeason, markSeen]);
 
 	if (!ready) return <Spinner />;
 	if (list.length === 0) return <p className='r-muted'>{t('calendar:events.noEvents')}</p>;
 
 	const seasonId = seasonFetchCompleted && season ? season.id : null;
+	// shown with the season it belongs to, whose dates it has
+	const gblCard = seasonFetchCompleted && season && gblSeason ? gblSeason : null;
 	return (
 		<>
-			<div className='r-section-h'>{t('calendar:events.scheduledCount', { count: list.length.toLocaleString() })}</div>
+			<div className='r-section-h'>
+				{t('calendar:events.scheduledCount', { count: (list.length + (gblCard ? 1 : 0)).toLocaleString() })}
+			</div>
 			<div className='r-eventlist'>
 				{list.map((p) => (
-					<EventCard
-						key={p.id}
-						post={p}
-						isSeason={p.id === seasonId}
-						unseen={!seenIds.has(p.id)}
-						open={p.id === openId}
-						onToggle={(card) => {
-							const opening = p.id !== openId;
-							holdAnchor(card, opening);
-							setOpenId(opening ? p.id : null);
-							// Only marking it seen on *open* (not close) — that's the
-							// action that actually means "you looked at this one".
-							if (opening) markSeen(p.id);
-						}}
-						preferSubtitle={prefersSubtitle(p, gl, dupeTitles)}
-					/>
+					<Fragment key={p.id}>
+						<EventCard
+							post={p}
+							isSeason={p.id === seasonId}
+							unseen={!seenIds.has(p.id)}
+							open={p.id === openId}
+							onToggle={(card) => {
+								const opening = p.id !== openId;
+								holdAnchor(card, opening);
+								setOpenId(opening ? p.id : null);
+								// Only marking it seen on *open* (not close) — that's the
+								// action that actually means "you looked at this one".
+								if (opening) markSeen(p.id);
+							}}
+							preferSubtitle={prefersSubtitle(p, gl, dupeTitles)}
+						/>
+						{gblCard && p.id === seasonId && (
+							<GblSeasonCard
+								season={gblCard}
+								startDate={p.startDate}
+								endDate={p.endDate}
+								unseen={!seenIds.has(gblEventId(gblCard))}
+								open={gblEventId(gblCard) === openId}
+								onToggle={(card) => {
+									const id = gblEventId(gblCard);
+									const opening = id !== openId;
+									holdAnchor(card, opening);
+									setOpenId(opening ? id : null);
+									if (opening) markSeen(id);
+								}}
+							/>
+						)}
+					</Fragment>
 				))}
 			</div>
 		</>
