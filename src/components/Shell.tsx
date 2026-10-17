@@ -53,10 +53,21 @@ const Shell = () => {
 		const observer = new ResizeObserver(measure);
 		observer.observe(appbar);
 		observer.observe(nav);
+		// What can change the bar's size without the observer noticing in time on a phone: the web fonts landing, the page finishing
+		// loading, the visual viewport changing (browser bars, zoom) and the frame after the first paint. A stale value here leaves
+		// the sticky list headers (.r-searchlist, .r-rank-head) tucked under the app bar.
+		const viewport = window.visualViewport;
+		const frame = requestAnimationFrame(measure);
+		void document.fonts?.ready.then(measure);
+		window.addEventListener('load', measure);
+		viewport?.addEventListener('resize', measure);
 		window.addEventListener('resize', measure);
 		window.addEventListener('orientationchange', measure);
 		return () => {
+			cancelAnimationFrame(frame);
 			observer.disconnect();
+			window.removeEventListener('load', measure);
+			viewport?.removeEventListener('resize', measure);
 			window.removeEventListener('resize', measure);
 			window.removeEventListener('orientationchange', measure);
 		};
