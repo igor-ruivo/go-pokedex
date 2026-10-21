@@ -34,6 +34,7 @@ export type BonusIconKey =
 	| 'megaEnergy'
 	| 'ultraBall'
 	| 'coinBag'
+	| 'pokeCoin'
 	| 'pokeBall'
 	| 'silverBottleCap'
 	| 'goldBottleCap';
@@ -71,6 +72,7 @@ export const BONUS_ICON_URL: Record<BonusIconKey, string> = {
 	megaEnergy: '/images/bonuses/mega-energy.png',
 	ultraBall: '/images/bonuses/ultra-ball.png',
 	coinBag: '/images/bonuses/coin-bag.png',
+	pokeCoin: '/images/bonuses/poke-coin.png',
 	pokeBall: '/images/bonuses/poke-ball.png',
 	silverBottleCap: '/images/bonuses/silver-bottle-cap.png',
 	goldBottleCap: '/images/bonuses/gold-bottle-cap.png',
@@ -108,6 +110,7 @@ const RULES: ReadonlyArray<readonly [BonusIconKey, (text: string) => boolean]> =
 	['stardust', (t) => /stardust/i.test(t)],
 	['ultraBall', (t) => /ultra ball/i.test(t)],
 	['coinBag', (t) => /coin bags?/i.test(t)],
+	['pokeCoin', (t) => /pok[eé]\s*coins?\b(?!\s*bags?)/i.test(t)],
 	['pokeBall', (t) => /pok[eé]\s*balls?/i.test(t)],
 	['silverBottleCap', (t) => /silver bottle caps?/i.test(t)],
 	['goldBottleCap', (t) => /gold(?:en)? bottle caps?/i.test(t)],
