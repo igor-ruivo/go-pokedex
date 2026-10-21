@@ -36,6 +36,9 @@ const TEAMS = [
 	[1500, recommended(1500, ['toucannon_shadow', 'mimikyu', 'diggersby'])],
 	[1500, recommended(1500, ['aegislash_shield', 'morpeko_full_belly', 'mimikyu'])],
 	[1500, recommended(1500, ['cramorant', 'ninetales_shadow', 'talonflame_shadow'])],
+	// Minior: Core becomes Meteor as the battle starts, then Core again below half HP
+	[1500, recommended(1500, ['minior_core', 'mimikyu', 'aegislash_shield'])],
+	[2500, recommended(2500, ['minior_core', 'tinkaton', 'corviknight'])],
 	[2500, recommended(2500, top(2500, 0, 3))],
 	[2500, recommended(2500, top(2500, 5, 3))],
 	[10000, recommended(10000, top(10000, 0, 3))],

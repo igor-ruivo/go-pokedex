@@ -26,6 +26,7 @@ export class SimBattle implements BattleLink, ActionLogicBattle {
 	private actionIndex = 0;
 	private roundChargedMoveUsed = 0;
 	private roundShieldUsed = false;
+	private roundFormAnimation = false;
 
 	getOpponent(index: number): SimPokemon | null {
 		return index === 0 ? this.pokemon[1] : this.pokemon[0];
@@ -69,6 +70,11 @@ export class SimBattle implements BattleLink, ActionLogicBattle {
 		first.reset();
 		second.reset();
 
+		// Species that change form as the battle begins (Minior Core -> Meteor)
+		for (const poke of [first, second]) {
+			if (poke.formChange?.trigger === 'battle_start') poke.changeForm(poke.formChange.alternativeFormId!);
+		}
+
 		// Charged Move priority only matters when Attack differs (or Cramorant mirrors itself).
 		this.usePriority =
 			first.stats.atk !== second.stats.atk || (first.speciesId === 'cramorant' && second.speciesId === 'cramorant');
@@ -86,6 +92,7 @@ export class SimBattle implements BattleLink, ActionLogicBattle {
 
 		this.roundChargedMoveUsed = 0;
 		this.roundShieldUsed = false;
+		this.roundFormAnimation = false;
 
 		if (this.turns > this.lastProcessedTurn) this.turnActions = [];
 
@@ -209,8 +216,8 @@ export class SimBattle implements BattleLink, ActionLogicBattle {
 		this.lastProcessedTurn = this.turns;
 		this.turns++;
 
-		// A charged sequence leaves both Pokémon on a 500ms cooldown
-		if (this.roundChargedMoveUsed) {
+		// A charged sequence (or a form-change animation) leaves both Pokémon on a 500ms cooldown
+		if (this.roundChargedMoveUsed || this.roundFormAnimation) {
 			for (const poke of both) poke.cooldown = 500;
 		}
 	}
@@ -440,6 +447,16 @@ export class SimBattle implements BattleLink, ActionLogicBattle {
 			!hasMoveTag(move, 'instant')
 		) {
 			defender.changeForm(defender.formChange.alternativeFormId!);
+		}
+
+		// HP-based form change for the defender (Minior Meteor breaking into Core below half HP)
+		const hpChange = defender.formChange;
+		if (hpChange && hpChange.trigger === 'hp' && hpChange.amount) {
+			if (defender.hp / defender.stats.hp < hpChange.amount && defender.hp > 0) {
+				defender.changeForm(hpChange.alternativeFormId!);
+				this.roundFormAnimation = true;
+				this.time += hpChange.animationTime ?? 0;
+			}
 		}
 
 		if (defender.hp <= 0) defender.faintSource = move.category;

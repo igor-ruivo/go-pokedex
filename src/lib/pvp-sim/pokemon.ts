@@ -434,7 +434,7 @@ export class SimPokemon {
 		return Math.floor(500 * ((opponent.stats.hp - opponent.hp) / opponent.stats.hp) + 500 * (this.hp / this.stats.hp));
 	}
 
-	/** Swaps to another form mid-battle (Aegislash, Mimikyu, Morpeko, Cramorant). */
+	/** Swaps to another form mid-battle (Aegislash, Mimikyu, Morpeko, Cramorant, Minior). */
 	changeForm(formId: string) {
 		const form = this.ctx.speciesById(formId);
 		if (!form) throw new Error(`Unknown form: ${formId}`);
@@ -504,6 +504,15 @@ export class SimPokemon {
 					if (battleCP === 2500) newLevel = Math.round(this.level / 0.75);
 					cpmIndex = CPMS.indexOf(this.getCPMByLevel(newLevel));
 					break;
+				case 'minior_meteor':
+					// Meteor form's stats are those of a level twice as high (the 2500 league has no such scaling yet).
+					if (battleCP === 1500) newLevel = this.level * 2;
+					break;
+				case 'minior_core':
+					if (battleCP === 1500) {
+						newLevel = this.level % 0.5 === 0 && this.level % 1 !== 0 ? (this.level - 0.5) / 2 : this.level / 2;
+					}
+					break;
 			}
 		}
 
@@ -520,7 +529,8 @@ export class SimPokemon {
 				atk: newCPM * (newForm.baseStats.atk + this.ivs.atk),
 				def: newCPM * (newForm.baseStats.def + this.ivs.def),
 			};
-			newLevel--;
+			// (Upstream checks `this.decrementer == 'minior_meteor'` — a typo for `activeFormId`, so only Core steps by half levels.)
+			newLevel -= this.activeFormId === 'minior_core' ? 0.5 : 1;
 		}
 
 		return newStats as { atk: number; def: number };

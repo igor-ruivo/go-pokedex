@@ -53,6 +53,7 @@ const FIXTURE_SPECIALS = [
 	'morpeko_full_belly',
 	'mimikyu',
 	'cramorant',
+	'minior_core',
 	'medicham',
 	'ninetales_shadow',
 	'talonflame_shadow',
@@ -106,7 +107,7 @@ function writeFixtureInputs(
 		const ids = ranking.map((r) => r.speciesId);
 		const pick = (list: Array<string>) => list.filter((id) => ids.includes(id));
 		const recommended = (id: string) => ranking.find((r) => r.speciesId === id)!.moveset;
-		const teamsOf = [ids.slice(0, 3), [ids[5], ids[11], ids[17]], pick(['aegislash_shield', 'morpeko_full_belly', 'mimikyu']), pick(['cramorant', 'ninetales_shadow', 'medicham']), pick(['annihilape_shadow', 'azumarill', 'forretress_shadow'])].filter((t) => t.length === 3);
+		const teamsOf = [ids.slice(0, 3), [ids[5], ids[11], ids[17]], pick(['aegislash_shield', 'morpeko_full_belly', 'mimikyu']), pick(['cramorant', 'ninetales_shadow', 'medicham']), pick(['annihilape_shadow', 'azumarill', 'forretress_shadow']), pick(['minior_core', 'mimikyu', 'aegislash_shield'])].filter((t) => t.length === 3);
 		leagues[l] = { species, ranking, teams: teamsOf.map((t) => t.map((id) => ({ speciesId: id, moveset: recommended(id) }))) };
 	}
 

@@ -217,6 +217,24 @@ export const decideAction = (
 		}
 	}
 
+	// Against Minior Meteor, hold onto energy for as long as possible until it changes form
+	if (
+		opponent.activeFormId === 'minior_meteor' &&
+		100 - poke.energy >= poke.fastMove.energyGain &&
+		turnsToLive > poke.fastMove.turns
+	) {
+		return undefined;
+	}
+
+	// Minior Meteor holds onto energy until it changes into its high-Attack form
+	if (
+		poke.activeFormId === 'minior_meteor' &&
+		100 - poke.energy >= poke.fastMove.energyGain &&
+		turnsToLive > poke.fastMove.turns
+	) {
+		return undefined;
+	}
+
 	// Optimise move timing to reduce free turns for the opponent
 	if (poke.optimizeMoveTiming) {
 		let targetCooldown = 500;
@@ -849,6 +867,9 @@ export const wouldShield = (
 
 	// Save shields in Aegislash Shield form to protect Blade form
 	if (defender.activeFormId === 'aegislash_shield' && move.damage * 2 < defender.hp) useShield = false;
+
+	// Save shields in Minior Meteor form to protect Core form
+	if (defender.activeFormId === 'minior_meteor' && move.damage * 2 < defender.hp) useShield = false;
 
 	// Save shields in Cramorant's gulping/gorging form to trigger Gulp Missile earlier against weak moves
 	if (

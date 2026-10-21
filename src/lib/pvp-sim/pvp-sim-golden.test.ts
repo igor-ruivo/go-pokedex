@@ -90,7 +90,7 @@ describe('fixture coverage', () => {
 	const pool = new Set(Object.values(golden.leagues).flatMap((l) => l.ranking.map((r) => r.speciesId)));
 
 	it('includes the form-changing Pokémon the AI has special cases for', () => {
-		for (const id of ['aegislash_shield', 'morpeko_full_belly', 'mimikyu', 'cramorant'])
+		for (const id of ['aegislash_shield', 'morpeko_full_belly', 'mimikyu', 'cramorant', 'minior_core'])
 			expect(pool.has(id)).toBe(true);
 	});
 

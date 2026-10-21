@@ -43,6 +43,10 @@ export interface FormChange {
 	alternativeFormId?: string;
 	defaultFormId?: string;
 	resetOnSwitch?: boolean;
+	/** For an `hp` trigger: the fraction of max HP the form changes below. */
+	amount?: number;
+	/** Milliseconds the form-change animation holds the battle. */
+	animationTime?: number;
 }
 
 export interface TeamBuilderForm {
