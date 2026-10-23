@@ -505,16 +505,19 @@ export class SimPokemon {
 					cpmIndex = CPMS.indexOf(this.getCPMByLevel(newLevel));
 					break;
 				case 'minior_meteor':
-					// Meteor form's stats are those of a level twice as high (the 2500 league has no such scaling yet).
-					if (battleCP === 1500) newLevel = this.level * 2;
+					// Level formulas as posted by u/Ok_Lobster8494, floored to a 0.5 level increment.
+					if (battleCP === 1500) newLevel = Math.floor(((47 * this.level) / 25 + 1) * 2) / 2;
+					if (battleCP === 2500) newLevel = Math.floor(((73 * this.level) / 50 + 26 / 25) * 2) / 2;
 					break;
 				case 'minior_core':
-					if (battleCP === 1500) {
-						newLevel = this.level % 0.5 === 0 && this.level % 1 !== 0 ? (this.level - 0.5) / 2 : this.level / 2;
-					}
+					// Inverse of the formulas above.
+					if (battleCP === 1500) newLevel = Math.round((((this.level - 1) * 25) / 47) * 2) / 2;
+					if (battleCP === 2500) newLevel = Math.round((((this.level - 26 / 25) * 50) / 73) * 2) / 2;
 					break;
 			}
 		}
+
+		newLevel = Math.min(newLevel, 55);
 
 		let newCP = this.cp;
 		let newStats: { atk: number; def: number } | undefined;
