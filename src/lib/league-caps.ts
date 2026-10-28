@@ -24,3 +24,13 @@ export const bestIvsFor = (
 	speciesId: string,
 	cpCap: number
 ): BestIvs | undefined => builder?.ivs[speciesId]?.[ivsKeyForCap(cpCap)];
+
+/** CP caps beyond Great / Ultra / Master that are always offered, with or without a current cup at that cap (dex-server always ships their
+ *  spreads): a Little Cup's 500 is a cap players keep Pokémon for whether or not one is running. */
+export const ALWAYS_EXTRA_CAPS: ReadonlyArray<number> = [500];
+
+/** Every CP cap that is none of Great / Ultra / Master — the always-offered ones plus any a current cup uses — ascending. */
+export const extraCapsOf = (leagues: ReadonlyArray<{ cpCap: number }>): Array<number> =>
+	[...new Set([...ALWAYS_EXTRA_CAPS, ...leagues.map((l) => l.cpCap)])]
+		.filter((cap) => cap !== 1500 && cap !== 2500 && cap < 10000)
+		.sort((a, b) => a - b);

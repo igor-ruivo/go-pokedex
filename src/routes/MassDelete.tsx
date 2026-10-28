@@ -19,6 +19,7 @@ import { useDebouncedValue } from '../hooks/useDebouncedValue';
 import { useDismiss } from '../hooks/useDismiss';
 import { cleanName, dexNo, sentenceCase } from '../lib/format';
 import { GAME_LANGUAGE_OPTIONS } from '../lib/game-language-options';
+import { extraCapsOf } from '../lib/league-caps';
 import { leagueIcon, leagueTitle } from '../lib/league-visuals';
 import { type MassDeleteTab, R } from '../lib/nav';
 import { type RaidMetric, raidRankOf } from '../lib/raid-metric';
@@ -1579,14 +1580,8 @@ const MassDeleteContent = ({
 	// never matters here, only its cp cap.
 	const tierForCpCap = (cpCap: number): ExtraTradeLeagueCutoff['tier'] =>
 		cpCap === 1500 ? 'great' : cpCap === 2500 ? 'ultra' : cpCap >= 10000 ? 'master' : `cap-${cpCap}`;
-	// The CP caps of the active cups that are none of Great / Ultra / Master (a Little Cup's 500): their spreads are their own.
-	const extraCaps = useMemo(
-		() =>
-			[
-				...new Set(activeExtraLeagues.map((l) => l.cpCap).filter((cap) => cap !== 1500 && cap !== 2500 && cap < 10000)),
-			].sort((a, b) => a - b),
-		[activeExtraLeagues]
-	);
+	// The CP caps that are none of Great / Ultra / Master (a Little Cup's 500, always offered, plus any a current cup uses): their spreads are their own.
+	const extraCaps = useMemo(() => extraCapsOf(activeExtraLeagues), [activeExtraLeagues]);
 	// Non-perfect IVs tab: the rank-1 spreads of those caps are left out by default; ticking the box protects them too.
 	const [considerSmallCapSpreads, setConsiderSmallCapSpreads] = useState(
 		() => readPersistentValue(ConfigKeys.ConsiderSmallCapSpreads) === 'true'

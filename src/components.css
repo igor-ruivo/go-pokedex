@@ -3055,7 +3055,6 @@
 	height: 60px;
 	align-self: flex-start;
 	border-radius: var(--r-xs);
-	overflow: hidden;
 	flex: none;
 	background: var(--surface-3);
 }
@@ -3065,7 +3064,8 @@
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
-	border-radius: 0;
+	/* the box itself does not clip (the shiny sparkles hang past its edge), so the picture rounds its own corners */
+	border-radius: var(--r-xs);
 }
 .rvmp .r-event-head .r-event-spotlight-sprites {
 	position: absolute;

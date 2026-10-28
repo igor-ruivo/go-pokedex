@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { useBestBuddy } from '../contexts/best-buddy-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IIvPercents } from '../DTOs/ivs';
+import { extraCapsOf } from '../lib/league-caps';
 import { useLeagueDefinitions } from '../queries/leagues';
 import { usePokemon } from '../queries/pokemon';
 import { fetchReachablePokemonIncludingSelf } from '../utils/pokemon-helper';
@@ -48,13 +49,7 @@ const useComputeIVs = ({
 	const { maxLevel } = useBestBuddy();
 	// Caps of the cups that are neither Great, Ultra nor uncapped: their IV ranks can't be read from those tiers.
 	const { leagues } = useLeagueDefinitions();
-	const extraCaps = useMemo(
-		() =>
-			[...new Set(leagues.map((l) => l.cpCap).filter((cap) => cap !== 1500 && cap !== 2500 && cap < 10000))].sort(
-				(a, b) => a - b
-			),
-		[leagues]
-	);
+	const extraCaps = useMemo(() => extraCapsOf(leagues), [leagues]);
 
 	// Walking the family graph is cheap; only the IV ranking is worth offloading.
 	const reachable = useMemo<Array<FamilyMember>>(() => {
