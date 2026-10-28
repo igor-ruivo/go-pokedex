@@ -191,7 +191,6 @@ export const Sprite = ({
 	onSwipeLeft,
 	onSwipeRight,
 	hint,
-	hideShadowMark,
 }: {
 	pokemon: IGamemasterPokemon;
 	alt?: string;
@@ -204,8 +203,6 @@ export const Sprite = ({
 	onSwipeRight?: () => void;
 	/** Carousel position hint dots under the sprite. */
 	hint?: { count: number; active: number };
-	/** Leaves out the shadow flame on a shadow Pokémon (the page has a Shadow switch over the sprite instead). */
-	hideShadowMark?: boolean;
 }) => {
 	const resolved = src ?? spriteUrl(pokemon);
 	const { displayed, fadeProps } = useSequentialFade(resolved);
@@ -266,7 +263,7 @@ export const Sprite = ({
 					}
 				: {})}
 		>
-			{pokemon.isShadow && !hideShadowMark && <ShadowMark className='r-shadow-mark r-sprite-shadow' />}
+			{pokemon.isShadow && <ShadowMark className='r-shadow-mark r-sprite-shadow' />}
 			<img
 				src={displayed}
 				alt={alt ?? pokemon.speciesName}

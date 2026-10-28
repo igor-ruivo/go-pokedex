@@ -27,6 +27,7 @@ export const LEAGUE_ICON: Record<string, string> = {
 	'fantasy-1500': `${CUPS}fantasy_cup_icon.png`,
 	'willpower-1500': `${CUPS}willpower_cup_icon.png`,
 	'colormega-1500': `${CUPS}color-mega.png`,
+	'halloweenmega-1500': `${CUPS}halloween-mega.png`,
 	'laic2027-1500': `${CUPS}laic.png`,
 };
 
@@ -53,6 +54,7 @@ const LEAGUE_COLOR: Record<string, string> = {
 	'fantasy-1500': '#accaec',
 	'willpower-1500': '#fd7b86',
 	'colormega-1500': '#bc9378',
+	'halloweenmega-1500': '#e99767',
 	// PvPoke's yearly Latin America International Championship cup — see the
 	// matching id in dex-server's `dynamicLeagueIds` (update the year there
 	// and here together whenever it rotates).

@@ -1206,7 +1206,6 @@ const PokemonDetail = () => {
 							<Sprite
 								pokemon={pokemon}
 								src={heroSprites[heroIdx]}
-								hideShadowMark
 								onTap={() => setHeroSpriteIdx((i) => (i ?? preferredHeroIdx) + 1)}
 								onSwipeLeft={() => setHeroSpriteIdx((i) => (i ?? preferredHeroIdx) + 1)}
 								onSwipeRight={() => setHeroSpriteIdx((i) => (i ?? preferredHeroIdx) - 1)}

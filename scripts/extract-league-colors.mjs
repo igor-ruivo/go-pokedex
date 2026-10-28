@@ -15,6 +15,7 @@ const SOLO_FILES = {
 	'fantasy-1500': `${ROOT}/cups/fantasy_cup_icon.png`,
 	'willpower-1500': `${ROOT}/cups/willpower_cup_icon.png`,
 	'colormega-1500': `${ROOT}/cups/color-mega.png`,
+	'halloweenmega-1500': `${ROOT}/cups/halloween-mega.png`,
 	'laic2027-1500': `${ROOT}/cups/laic.png`,
 };
 // These three share one template (medal shape, white background, gray metal
