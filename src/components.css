@@ -681,7 +681,7 @@
 	bottom: 6px;
 	width: 22px;
 	height: 22px;
-	z-index: 2;
+	z-index: 6;
 }
 /* the name. `:not(.r-reach-art)` excludes the sprite's own wrapper span. */
 .rvmp .r-reach-chip span:not(.r-reach-art) {
@@ -1114,7 +1114,7 @@
 	bottom: 0;
 	width: 22px;
 	height: 22px;
-	z-index: 2;
+	z-index: 6;
 }
 /* raids: the attacking type this member is best at — a self-contained circular
    type medallion centred on the sprite's lower edge; click to cycle types */
@@ -2622,7 +2622,7 @@
 	right: 4%;
 	width: 22%;
 	height: 22%;
-	z-index: 2;
+	z-index: 6;
 }
 /* rank climbed / dropped since the last PvP ranking update — top-right corner */
 .rvmp .r-pc-delta {
