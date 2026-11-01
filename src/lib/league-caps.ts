@@ -25,6 +25,13 @@ export const bestIvsFor = (
 	cpCap: number
 ): BestIvs | undefined => builder?.ivs[speciesId]?.[ivsKeyForCap(cpCap)];
 
+/** A Super Max Mega's rank-1 spread (`[level, atk, def, hp]`, level up to 52) at a CP cap, if dex-server shipped one. */
+export const superMegaIvsFor = (
+	builder: Pick<TeamBuilderData, 'superMegaIvs'> | undefined,
+	speciesId: string,
+	cpCap: number
+): BestIvs | undefined => builder?.superMegaIvs?.[speciesId]?.[ivsKeyForCap(cpCap)];
+
 /** CP caps beyond Great / Ultra / Master that are always offered, with or without a current cup at that cap (dex-server always ships their
  *  spreads): a Little Cup's 500 is a cap players keep Pokémon for whether or not one is running. */
 export const ALWAYS_EXTRA_CAPS: ReadonlyArray<number> = [500];

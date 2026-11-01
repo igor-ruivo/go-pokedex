@@ -11,6 +11,8 @@ export interface IBadIvPattern {
 export interface IPerLevelBadIvPatterns {
 	level50: Array<IBadIvPattern>;
 	level51: Array<IBadIvPattern>;
+	/** Only for a Super Max Mega (a ceiling of 52): dex-server ships its own tied-for-best patterns for it. */
+	level52?: Array<IBadIvPattern>;
 }
 
 export type IBestIvSpreads = {

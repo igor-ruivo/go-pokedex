@@ -185,13 +185,32 @@ describe('the Shadow and normal forms', () => {
 describe('Super Max Megas', () => {
 	const superId = ids[1];
 	const superSpecies = species.map((s) => (s.speciesId === superId ? { ...s, isSuperMega: true } : s));
-	const e = evaluatorFor(superSpecies);
+	// a spread deliberately unlike the species' ordinary one: what dex-server ships for a ceiling of 52 is its own
+	const superSpread: [number, number, number, number] = [30, 3, 14, 13];
+	const superBuilder = {
+		...builder,
+		superMegaIvs: { [superId]: { [league]: superSpread } },
+	} as unknown as TeamBuilderData;
+	const e = new TeamEvaluator({
+		league,
+		cpCap: LEAGUE_CP[league],
+		builder: superBuilder,
+		species: superSpecies,
+		ranking: data.ranking,
+	});
 
-	it('builds them at the best spread up to level 52, or the lower level the CP cap gives', () => {
+	it('builds them at the best spread for level 52 dex-server ships, at the level the CP cap gives it', () => {
 		const build = e.superMegaBuild(superId);
 		expect(build).toBeDefined();
+		expect(build!.ivs).toEqual([3, 14, 13]);
+		expect(build!.ivs).not.toEqual(builder.ivs[superId]?.[league]?.slice(1));
 		expect(build!.level).toBeLessThanOrEqual(52);
 		expect(e.superMegaBuild(ids[0])).toBeUndefined();
+	});
+
+	it('has no build for a Super Max Mega dex-server shipped no level-52 spread for, rather than reuse level 50’s', () => {
+		const withoutSpreads = evaluatorFor(superSpecies);
+		expect(withoutSpreads.superMegaBuild(superId)).toBeUndefined();
 	});
 
 	it('adds every one as a candidate of the completions and swaps, however far down the ranking', () => {

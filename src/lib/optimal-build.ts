@@ -2,6 +2,8 @@ import type { RankEntry } from '../utils/pokemon-helper';
 import { bestSpread, competitionRanks, highestLevelUnderCap, ivRankOf } from './iv-rank';
 import { maxLevelOf, type SlotIvs } from './team-analysis';
 
+const NO_ROWS: ReadonlyArray<RankEntry> = [];
+
 export interface OptimalBuild {
 	ivRank: number | undefined;
 	ivsOptimal: boolean;
@@ -15,10 +17,10 @@ export interface OptimalBuild {
 }
 
 /**
- * How a member's IVs and level compare with what is optimal for the member itself: a Best Buddy is measured against the
- * level-51 IV table, everyone else against level 50's — a Super Max Mega's two extra levels don't change its best spread
- * (see dex-server's super-mega-guard), they only raise the level the spread is taken to. The website's own Best Buddy
- * setting is not consulted: the only inputs are the Pokémon, its build, its two statuses and the CP cap.
+ * How a member's IVs and level compare with what is optimal for the member itself: each member is measured against the IV
+ * table of its own level ceiling — 50, 51 as a Best Buddy, 52 as a Super Max Mega, 53 as both (see `maxLevelOf`). A Super
+ * Max Mega's extra levels do change its best spread wherever it fits a capped league at level 50. The website's own Best
+ * Buddy setting is not consulted: the only inputs are the Pokémon, its build, its two statuses and the CP cap.
  */
 export const computeOptimalBuild = (input: {
 	baseStats: { atk: number; def: number; hp: number } | undefined;
@@ -27,9 +29,11 @@ export const computeOptimalBuild = (input: {
 	level: number | undefined;
 	flags: { buddy: boolean; superMega: boolean };
 	cpCap: number;
-	/** The league's IV tables, best first: up to level 50, and up to level 51 for a Best Buddy. */
-	rows50: ReadonlyArray<RankEntry>;
-	rows51: ReadonlyArray<RankEntry>;
+	/**
+	 * The league's IV tables, best first, by the level ceiling they were computed for: 50, 51 (Best Buddy) and — for a species
+	 * that can be a Super Max Mega — 52 and 53 (with the ribbon too). A ceiling with no table reads as an empty one.
+	 */
+	rows: Readonly<Partial<Record<number, ReadonlyArray<RankEntry>>>>;
 }): OptimalBuild => {
 	const { baseStats, ivs, level, flags, cpCap } = input;
 	if (!baseStats || !ivs) {
@@ -42,13 +46,13 @@ export const computeOptimalBuild = (input: {
 			superMega: undefined,
 		};
 	}
-	const tableFor = (buddy: boolean) => (buddy ? input.rows51 : input.rows50);
+	const tableFor = (statuses: { buddy: boolean; superMega: boolean }) => input.rows[maxLevelOf(statuses)] ?? NO_ROWS;
 	const ceiling = maxLevelOf(flags);
 	const buddyCeiling = maxLevelOf({ buddy: !flags.buddy, superMega: flags.superMega });
 	const superCeiling = maxLevelOf({ buddy: flags.buddy, superMega: !flags.superMega });
-	const rowsNow = tableFor(flags.buddy);
-	const rowsBuddy = tableFor(!flags.buddy);
-	const rowsSuper = tableFor(flags.buddy);
+	const rowsNow = tableFor(flags);
+	const rowsBuddy = tableFor({ buddy: !flags.buddy, superMega: flags.superMega });
+	const rowsSuper = tableFor({ buddy: flags.buddy, superMega: !flags.superMega });
 	const ranks = competitionRanks(rowsNow);
 	const ivRank = ivRankOf(rowsNow, ranks, ivs);
 	return {

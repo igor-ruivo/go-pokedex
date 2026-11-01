@@ -80,6 +80,11 @@ export interface TeamBuilderData {
 	moves: Record<string, TeamBuilderMove>;
 	/** Rank-1 spread per ranked species and CP cap (see `ivsKeyForCap`) — every Pokémon is rated at its ceiling. */
 	ivs: Record<string, Partial<Record<string, BestIvs>>>;
+	/**
+	 * `ivs` for a Super Max Mega, whose level ceiling is 52: the same rank-1 rule and keys, taken up to level 52. Only the ranked
+	 * species that are Super Max Megas have an entry (absent in data from before dex-server shipped them).
+	 */
+	superMegaIvs?: Record<string, Partial<Record<string, BestIvs>>>;
 	forms: Record<string, TeamBuilderForm>;
 	/** The moves each ranked species can use, from PvPoke's data like `moves` itself (absent in data from before dex-server shipped them). */
 	pools?: Record<string, TeamBuilderMovePool>;

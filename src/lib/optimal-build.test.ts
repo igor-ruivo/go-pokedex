@@ -11,18 +11,18 @@ const venusaurMega = { atk: 241, def: 246, hp: 190 };
 const GREAT = 1500;
 const MASTER = 10000;
 
-const medichamGreat = {
-	rows50: table(medicham, GREAT, 50),
-	rows51: table(medicham, GREAT, 51),
-};
-const venusaurMaster = {
-	rows50: table(venusaurMega, MASTER, 50),
-	rows51: table(venusaurMega, MASTER, 51),
-};
-const venusaurGreat = {
-	rows50: table(venusaurMega, GREAT, 50),
-	rows51: table(venusaurMega, GREAT, 51),
-};
+/** Every IV table a species can need, one per level ceiling: 50, 51, and 52 / 53 for a Super Max Mega. */
+const tablesOf = (base: { atk: number; def: number; hp: number }, cap: number, ceilings = [50, 51]) => ({
+	rows: Object.fromEntries(ceilings.map((ceiling) => [ceiling, table(base, cap, ceiling)])),
+});
+
+const medichamGreat = tablesOf(medicham, GREAT);
+const venusaurMaster = tablesOf(venusaurMega, MASTER, [50, 51, 52, 53]);
+const venusaurGreat = tablesOf(venusaurMega, GREAT, [50, 51, 52, 53]);
+// light enough to fit Ultra League at level 50 — where a ceiling of 52 changes its best spread
+const lightMega = { atk: 180, def: 200, hp: 150 };
+const ULTRA = 2500;
+const lightUltra = tablesOf(lightMega, ULTRA, [50, 51, 52, 53]);
 
 const none = { buddy: false, superMega: false };
 const medichamAt = (ivs: [number, number, number] | undefined, level: number | undefined, flags = none) =>
@@ -98,7 +98,7 @@ describe('computeOptimalBuild — IVs measured against the Pokémon’s own leve
 	});
 
 	it('has no rank for IVs outside the table', () => {
-		expect(computeOptimalBuild({ ...base(), rows50: [], rows51: [] }).ivRank).toBeUndefined();
+		expect(computeOptimalBuild({ ...base(), rows: {} }).ivRank).toBeUndefined();
 	});
 
 	function base() {
@@ -162,17 +162,50 @@ describe('computeOptimalBuild — Super Max Mega', () => {
 		expect(venusaur(none, 52).levelOptimal).toBe(false);
 	});
 
-	it('keeps the same IV rank with or without the Super Max Mega status: its levels need no table of their own', () => {
-		const plain = venusaur(none, 50);
-		const asSuper = venusaur({ buddy: false, superMega: true }, 52);
-		expect(asSuper.ivRank).toBe(plain.ivRank);
-		expect(asSuper.ivsOptimal).toBe(plain.ivsOptimal);
-	});
-
-	it('is cap-bound in a capped league whatever the ceiling: the extra levels change nothing', () => {
+	it('is cap-bound for a heavy Mega in a capped league whatever the ceiling: the extra levels change nothing', () => {
 		const plain = venusaur(none, undefined, venusaurGreat, GREAT);
 		const asSuper = venusaur({ buddy: false, superMega: true }, undefined, venusaurGreat, GREAT);
 		expect(asSuper.best).toEqual(plain.best);
 		expect(asSuper.best!.level).toBeLessThan(50);
+	});
+});
+
+describe('computeOptimalBuild — a Super Max Mega light enough to fit a capped league at level 50', () => {
+	const light = (
+		flags: { buddy: boolean; superMega: boolean },
+		ivs: [number, number, number],
+		level: number | undefined
+	) =>
+		computeOptimalBuild({
+			baseStats: lightMega,
+			canSuperMega: true,
+			ivs,
+			level,
+			flags,
+			cpCap: ULTRA,
+			...lightUltra,
+		});
+
+	it('is measured against the level-52 table, not level 50’s', () => {
+		// 8/15/15 is the best level-50 spread; with a ceiling of 52 it is 4/14/15
+		const plain = light(none, [8, 15, 15], undefined);
+		expect(plain.ivRank).toBe(1);
+		expect(plain.ivsOptimal).toBe(true);
+
+		const asSuper = light({ buddy: false, superMega: true }, [8, 15, 15], undefined);
+		expect(asSuper.ivsOptimal).toBe(false);
+		expect(asSuper.best!.ivs).toEqual([4, 14, 15]);
+		expect(light({ buddy: false, superMega: true }, [4, 14, 15], undefined).ivsOptimal).toBe(true);
+	});
+
+	it('says what the Super Max Mega button sets (the level-52 spread), and what turning it off goes back to', () => {
+		expect(light(none, [8, 15, 15], 50).superMega!.ivs).toEqual([4, 14, 15]);
+		expect(light({ buddy: false, superMega: true }, [4, 14, 15], 52).superMega!.ivs).toEqual([8, 15, 15]);
+	});
+
+	it('takes the level of the spread up to the ceiling', () => {
+		const best = light({ buddy: false, superMega: true }, [4, 14, 15], undefined).best!;
+		expect(best.level).toBeGreaterThan(50);
+		expect(best.level).toBeLessThanOrEqual(52);
 	});
 });

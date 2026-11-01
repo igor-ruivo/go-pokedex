@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
 import type { TeamBuilderData } from '../DTOs/ITeamBuilder';
-import { bestIvsFor, ivsKeyForCap, LEAGUE_CP, registerLeagueCaps } from './league-caps';
+import { bestIvsFor, ivsKeyForCap, LEAGUE_CP, registerLeagueCaps, superMegaIvsFor } from './league-caps';
 
 describe('LEAGUE_CP', () => {
 	const original = { ...LEAGUE_CP };
@@ -57,5 +57,23 @@ describe('bestIvsFor', () => {
 		expect(bestIvsFor(builder, 'azumarill', 2500)).toBeUndefined();
 		expect(bestIvsFor(builder, 'medicham', 1500)).toBeUndefined();
 		expect(bestIvsFor(undefined, 'azumarill', 1500)).toBeUndefined();
+	});
+});
+
+describe('superMegaIvsFor', () => {
+	const builder = {
+		superMegaIvs: { sableye_mega: { 'ultra': [52, 4, 14, 15], 'cap-500': [20, 1, 2, 3] } },
+	} as unknown as Pick<TeamBuilderData, 'superMegaIvs'>;
+
+	it('reads the level-52 spread for the cap’s key', () => {
+		expect(superMegaIvsFor(builder, 'sableye_mega', 2500)).toEqual([52, 4, 14, 15]);
+		expect(superMegaIvsFor(builder, 'sableye_mega', 500)).toEqual([20, 1, 2, 3]);
+	});
+
+	it('has none for a species that is not a Super Max Mega, a cap with nothing shipped, or older data without any', () => {
+		expect(superMegaIvsFor(builder, 'azumarill', 2500)).toBeUndefined();
+		expect(superMegaIvsFor(builder, 'sableye_mega', 1500)).toBeUndefined();
+		expect(superMegaIvsFor({}, 'sableye_mega', 2500)).toBeUndefined();
+		expect(superMegaIvsFor(undefined, 'sableye_mega', 2500)).toBeUndefined();
 	});
 });
