@@ -29,6 +29,7 @@ export const LEAGUE_ICON: Record<string, string> = {
 	'colormega-1500': `${CUPS}color-mega.png`,
 	'halloweenmega-1500': `${CUPS}halloween-mega.png`,
 	'laic2027-1500': `${CUPS}laic.png`,
+	'laic2027gbl-1500': `${CUPS}laic.png`,
 };
 
 // Each one is the icon's own dominant, identity-carrying color — computed
@@ -59,6 +60,7 @@ const LEAGUE_COLOR: Record<string, string> = {
 	// matching id in dex-server's `dynamicLeagueIds` (update the year there
 	// and here together whenever it rotates).
 	'laic2027-1500': '#3077e8',
+	'laic2027gbl-1500': '#3077e8',
 };
 
 // Deterministic fallback for any active league id with no curated color
