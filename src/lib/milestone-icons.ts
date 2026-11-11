@@ -9,6 +9,7 @@ export type BonusIconKey =
 	| 'gift'
 	| 'dailyIncense'
 	| 'incense'
+	| 'starPiece'
 	| 'lure'
 	| 'trade'
 	| 'camera'
@@ -47,6 +48,7 @@ export const BONUS_ICON_URL: Record<BonusIconKey, string> = {
 	gift: '/images/bonuses/gift.png',
 	dailyIncense: '/images/bonuses/incense.png',
 	incense: '/images/bonuses/incense-plain.png',
+	starPiece: '/images/bonuses/starpiece.png',
 	lure: '/images/bonuses/lure-module.png',
 	trade: '/images/bonuses/trade.png',
 	camera: '/images/bonuses/camera.png',
@@ -108,6 +110,7 @@ const RULES: ReadonlyArray<readonly [BonusIconKey, (text: string) => boolean]> =
 	['egg', (t) => /\beggs?\b/i.test(t.replace(/lucky eggs?/gi, '')) || /hatch/i.test(t)],
 	['xp', (t) => /\bxp\b/i.test(t)],
 	['stardust', (t) => /stardust/i.test(t)],
+	['starPiece', (t) => /star piece/i.test(t)],
 	['ultraBall', (t) => /ultra ball/i.test(t)],
 	['coinBag', (t) => /coin bags?/i.test(t)],
 	['pokeCoin', (t) => /pok[eé]\s*coins?\b(?!\s*bags?)/i.test(t)],
