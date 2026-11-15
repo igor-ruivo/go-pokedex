@@ -47,7 +47,7 @@ describe('leagueTitle', () => {
 	});
 
 	it('names the yearly championship cup after the current year, whatever year its id carries', () => {
-		const title = `${new Date().getFullYear()} GO LAIC`;
+		const title = `${new Date().getFullYear() + 1} GO LAIC`;
 		expect(leagueTitle(league('laic2027-1500', 'LAIC (1500 CP)', 1500), GameLanguage.en)).toEqual({
 			short: title,
 			full: title,

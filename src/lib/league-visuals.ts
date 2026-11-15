@@ -193,7 +193,7 @@ export const leagueTitle = (league: ILeagueDefinition, gl: GameLanguage): { shor
 	// current calendar year, regardless of which year happens to be baked
 	// into the league id itself (`laic2027`, `laic2028`, …).
 	if (formatOf(league.id).startsWith('laic')) {
-		const title = `${new Date().getFullYear()} GO LAIC`;
+		const title = `${new Date().getFullYear() + 1} GO LAIC`;
 		return { short: title, full: title };
 	}
 

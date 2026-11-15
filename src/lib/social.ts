@@ -4,7 +4,7 @@
  */
 export const SOCIAL_LINKS = {
 	/** The Discord server's invite link, e.g. 'https://discord.gg/xxxxxxx'. */
-	discord: 'https://discord.gg/Q5us3Rjhh',
+	discord: 'https://discord.gg/Q3k5QWjp6B',
 } as const;
 
 export interface SocialLink {

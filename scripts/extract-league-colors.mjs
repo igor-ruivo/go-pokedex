@@ -17,6 +17,7 @@ const SOLO_FILES = {
 	'colormega-1500': `${ROOT}/cups/color-mega.png`,
 	'halloweenmega-1500': `${ROOT}/cups/halloween-mega.png`,
 	'laic2027-1500': `${ROOT}/cups/laic.png`,
+	'laic2027gbl-1500': `${ROOT}/cups/laic.png`,
 };
 // These three share one template (medal shape, white background, gray metal
 // ring, identical pink "MEGA" ribbon) — their only genuinely distinguishing
