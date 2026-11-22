@@ -108,7 +108,7 @@ const DayRow = ({ day, now }: { day: SpecialDay; now: number }) => {
 						</Link>
 					</h3>
 					<p className='h-day-when'>{dateRange(post.startDate, post.endDate, currentLanguage)}</p>
-					{bonuses.length > 0 && (
+					{bonuses.length > 0 && kind !== 'community' && (
 						<ul className='h-day-bonuses'>
 							{bonuses.map((b, i) => (
 								<li key={b}>

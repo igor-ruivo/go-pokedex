@@ -28,6 +28,10 @@ export const gigantamaxArtUrl = (
 	pokemon: IGamemasterPokemon,
 	gamemasterPokemon: Record<string, IGamemasterPokemon>
 ): string => {
+	if (pokemon.speciesId === 'eternatus') {
+		return `${POKEDEX_ART}/890.png`;
+	}
+
 	const form = Math.max(1, highestFormOf(pokemon.dex, gamemasterPokemon)) + 1;
 	return `${POKEDEX_ART}/${String(pokemon.dex).padStart(3, '0')}_f${form}.png`;
 };
